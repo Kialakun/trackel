@@ -18,11 +18,19 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 """ViewSet Imports"""
-from trackel.el.views import ExtractLossDataViewSet
+from trackel.el import views
+from trackel.products import views
+from trackel.shifts import views
+from trackel.rejects import views
+from trackel.supervisors import views
 
 router = DefaultRouter()
 
-router.register(r'ExtractLoss', ExtractLossDataViewSet)
+router.register(r'ExtractLoss', views.ExtractLossDataViewSet)
+router.register(r'Products', views.ProductViewSet)
+router.register(r'Shifts', views.ShiftDataViewSet)
+router.register(r'Supervisors', views.SupervisorViewSet)
+router.register(r'Rejects', views.LossDeploymentsViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
