@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     # third party apps
     'rest_framework',
-
+    'rest_framework_datatables',
+    
     # apps
     'trackel.el',
     'trackel.products',
@@ -132,5 +133,14 @@ STATIC_URL = '/static/'
 # REST Framework Setup
 
 REST_FRAMEWORK = {
-    
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 50,
 }
