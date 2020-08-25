@@ -37,6 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # third party apps
+    'rest_framework',
+
+    # apps
+    'trackel.el',
+    'trackel.products',
+    'trackel.shifts',
+    'trackel.supervisors',
+    'trackel.rejects',
 ]
 
 MIDDLEWARE = [
@@ -118,3 +128,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# REST Framework Setup
+
+REST_FRAMEWORK = {
+    
+}

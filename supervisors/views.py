@@ -9,3 +9,4 @@ class SupervisorViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
     serializer_class = SupervisorSerializer
     queryset = Supervisor.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]

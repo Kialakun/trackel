@@ -9,3 +9,4 @@ class LossDeploymentViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
     serializer_class = LossDeploymentSerializer
     queryset = LossDeployment.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]

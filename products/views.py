@@ -9,3 +9,4 @@ class ExtractLossDataViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]

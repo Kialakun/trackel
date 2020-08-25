@@ -9,3 +9,4 @@ class ShiftViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]
