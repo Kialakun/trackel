@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{% load static %}
+{% load pwa %}
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="SPB">
+  <meta name="author" content="SPB">
+
+  <title>Extract Loss Tracker</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/simple-sidebar.css' %}" rel="stylesheet">
+  {% progressive_web_app_meta %}
+
+</head>
+
+<body>
+<!-- Wrapper -->
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-success border-right shadow" id="sidebar-wrapper">
+      <div class="sidebar-heading text-white font-weight-bold">SPB TrackEL </div>
+      <div class="list-group list-group-flush">
+        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-success text-white">Dashboard</a>
+        <a href="{% url 'extract_loss_data' %}" class="list-group-item list-group-item-action bg-success text-white">Extract Loss</a>
+        <a href="{% url 'add_shift' %}" class="list-group-item list-group-item-action bg-success text-white">Shifts</a>
+        <a href="{% url 'add_supervisor' %}" class="list-group-item list-group-item-action bg-success text-white">Supervisors</a>
+        <a href="{% url 'add_product' %}" class="list-group-item list-group-item-action bg-success text-white">Products</a>
+        <a href="{% url 'add_kpi' %}" class="list-group-item list-group-item-action bg-success text-white">KPIs</a>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <!-- navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <button class="btn btn-success font-weight-bold shadow-sm" id="menu-toggle">TrackEL <i class="fas fa-fw fa-arrow-right"></i></button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ExtractLossDataForm/">Extract Loss</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{refresh_url}}">Refresh</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{user.first_name}} {{user.last_name}}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Logout</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- /navbar -->
+
+      <!-- breadcrumb -->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">{{page_title}}
+          <p class="text-muted small">{{page_info}}</p>
+        </li>
+      </ol>
+      <!-- /breadcrumb -->
+      <div class="container-fluid">
+        {% for message in messages %}
+          <div class="alert {{ message.tags }} m-1 alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+          </div>
+        {% endfor %}
+        {% block content %}{% endblock content %}
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  {% block vue %}{% endblock vue %}
+
+  {% block custom_js %}{% endblock custom_js %}
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+</body>
+
+</html>

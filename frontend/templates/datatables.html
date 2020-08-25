@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% load trackel_tags %}
+
+{% comment %}
+        For Showing datatables and triggering update forms
+{% endcomment %}
+
+{% block content %}
+
+<div id="app">
+  <div class="table-responsive">
+    <trackel-datatable-btngroup></trackel-datatable-btngroup>
+    <trackel-datatable></trackel-datatable>
+  </div>
+</div>
+{% render_trackel_form %}
+{% endblock content %}
+
+{% block vue %}
+<template id="trackel-dt-btngrp">
+  <div class="btn-group" role="group" aria-label="datatable button group">
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-target="#addModal">Add</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+  </div>
+</template>
+
+<template id="trackel-dt" data-url="{% url url %}">
+  <table id="trackel-table" class="table table-sm table-striped" data-server-side="true" data-ajax="{% url url %}?format=datatables">
+    <thead>
+      <tr>
+        <th v-for="(header, key) in headers" :data-data="key">[[ header ]]</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in rows">
+        <td v-for="data in row">[[ data ]]</td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script type="text/javascript">
+  Vue.component('trackel-datatable-btngroup',{
+    delimiters: ["[[", "]]"],
+    data: function(){},
+    methods: {},
+    template: '#trackel-dt-btngrp'
+  });
+
+  Vue.component('trackel-datatable',{
+    delimiters: ["[[", "]]"],
+    data: function(){
+      var obj = this;
+      return {
+        'headers': [],
+        'rows': this.getData(obj)
+      }
+    },
+    methods: {
+      getData: function(object){
+        var url = $('#trackel-dt').data('url');
+        $.get(url).done(function(response){
+          object.rows = response.results;
+          object.headers = object.getHeaders(object);
+        });
+      },
+      formatString: function(string){
+        var sentence = string.toLowerCase().split("_");
+        for(var i = 0; i< sentence.length; i++){
+          sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+        }
+        return sentence.join(" ");
+      },
+      getHeaders: function(object){
+        var data = object.rows[0];
+        var headers = [];
+        for (var key in data) {
+          headers.push({key: object.formatString(key)});
+        }
+        return headers;
+      },
+    },
+    template: '#trackel-dt'
+  });
+
+  var app = Vue({
+    delimiters: ["[[", "]]"],
+    el: '#app',
+  });
+
+  $(document).ready(function() {
+    $('#trackel-table').DataTable();
+  });
+
+</script>
+{% endblock vue %}
