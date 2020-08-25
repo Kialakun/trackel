@@ -1,0 +1,18 @@
+from django.db import models
+from trackel.el.models import ExtractLossData
+
+# Create your models here.
+class LossDeployment(models.Model):
+    """Django data model LossDeployment"""
+
+    shift = models.ForeignKey(ExtractLossData, on_delete=models.CASCADE, related_name='', verbose_name='')
+    pkg_filler = models.IntegerField(blank=True, null=True, verbose_name='PKG Filler')
+    heuft_1_rejects = models.IntegerField(blank=True, null=True, verbose_name='Heuft 1 Rejects')
+    heuft_2_rejects = models.IntegerField(blank=True, null=True, verbose_name='Heuft 2 Rejects')
+
+    class Meta:
+        verbose_name = 'LossDeployment'
+        verbose_name_plural = 'LossDeployments'
+
+    def __str__(self):
+        return str(self.shift)

@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Products(models.Model):
+class Products(models.Mdel):
     """Django data model Products"""
     PACKETS = (('24s', '24s'), ('4x6s', '4x6s'))
     product_name = models.CharField(blank=True, max_length=100)
