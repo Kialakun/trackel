@@ -1,14 +1,14 @@
 from django.db import models
 
 # Create your models here.
-class Supervisors(models.Model):
+class Supervisor(models.Model):
     """Django data model Supervisors"""
 
     first_name = models.CharField(blank=True, max_length=100)
     last_name = models.CharField(blank=True, max_length=100)
 
     class Meta:
-        verbose_name = 'Supervisors'
+        verbose_name = 'Supervisor'
         verbose_name_plural = 'Supervisors'
 
     def __str__(self):

@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Shift
+from .models import LossDeployment
 
-class ExtractLossDataSerializer(serializers.ModelSerializer):
+class LossDeploymentSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
     class Meta:
-        model = Shift
+        model = LossDeployment
         fields = '__all__'
