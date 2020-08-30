@@ -5,4 +5,4 @@ class ExtractLossDataSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
     class Meta:
         model = ExtractLossData
-        fields = '__all__'
+        fields = ['id', 'week']

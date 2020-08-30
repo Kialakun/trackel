@@ -13,7 +13,7 @@
   <title>Extract Loss Tracker</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 
   <!-- Custom styles for this template -->
   <link href="{% static 'css/simple-sidebar.css' %}" rel="stylesheet">
@@ -30,11 +30,11 @@
       <div class="sidebar-heading text-white font-weight-bold">SPB TrackEL </div>
       <div class="list-group list-group-flush">
         <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-success text-white">Dashboard</a>
-        <a href="{% url 'extract_loss_data' %}" class="list-group-item list-group-item-action bg-success text-white">Extract Loss</a>
-        <a href="{% url 'add_shift' %}" class="list-group-item list-group-item-action bg-success text-white">Shifts</a>
-        <a href="{% url 'add_supervisor' %}" class="list-group-item list-group-item-action bg-success text-white">Supervisors</a>
-        <a href="{% url 'add_product' %}" class="list-group-item list-group-item-action bg-success text-white">Products</a>
-        <a href="{% url 'add_kpi' %}" class="list-group-item list-group-item-action bg-success text-white">KPIs</a>
+        <a href="{% url 'el' %}" class="list-group-item list-group-item-action bg-success text-white">Extract Loss</a>
+        <a href="" class="list-group-item list-group-item-action bg-success text-white">Shifts</a>
+        <a href="" class="list-group-item list-group-item-action bg-success text-white">Supervisors</a>
+        <a href="" class="list-group-item list-group-item-action bg-success text-white">Products</a>
+        <a href="" class="list-group-item list-group-item-action bg-success text-white">KPIs</a>
       </div>
     </div>
     <!-- /#sidebar-wrapper -->
@@ -43,7 +43,7 @@
     <div id="page-content-wrapper">
       <!-- navbar -->
       <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-        <button class="btn btn-success font-weight-bold shadow-sm" id="menu-toggle">TrackEL <i class="fas fa-fw fa-arrow-right"></i></button>
+        <button class="btn btn-sm btn-success font-weight-bold shadow-sm m-1" id="menu-toggle">TrackEL <i class="fas fa-fw fa-arrow-right"></i></button>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -52,13 +52,13 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-              <a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/ExtractLossDataForm/">Extract Loss</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{refresh_url}}">Refresh</a>
+              <a class="nav-link" href="#">Refresh</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -78,9 +78,7 @@
 
       <!-- breadcrumb -->
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">{{page_title}}
-          <p class="text-muted small">{{page_info}}</p>
-        </li>
+        <li class="breadcrumb-item">{{page_title}}</li>
       </ol>
       <!-- /breadcrumb -->
       <div class="container-fluid">
@@ -101,8 +99,9 @@
   <!-- /#wrapper -->
 
   <!-- Bootstrap core JavaScript -->
-  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/vue.js' %}" charset="utf-8"></script>
 
   {% block vue %}{% endblock vue %}
 

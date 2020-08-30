@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Supervisor
 
-class ExtractLossDataSerializer(serializers.ModelSerializer):
+class SupervisorSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
     class Meta:
         model = Supervisor

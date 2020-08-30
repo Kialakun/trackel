@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 
 # Create your models here.
@@ -6,6 +7,7 @@ class Supervisor(models.Model):
 
     first_name = models.CharField(blank=True, max_length=100)
     last_name = models.CharField(blank=True, max_length=100)
+    timestamp = models.DateTimeField(blank=True, default=datetime.datetime.now)
 
     class Meta:
         verbose_name = 'Supervisor'

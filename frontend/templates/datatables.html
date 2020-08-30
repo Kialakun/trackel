@@ -10,26 +10,35 @@
 
 <div id="app">
   <div class="table-responsive">
-    <trackel-datatable-btngroup></trackel-datatable-btngroup>
-    <trackel-datatable></trackel-datatable>
+    <div class="row">
+      <div class="col-lg-12">
+        <trackel-datatable-btngroup></trackel-datatable-btngroup>
+      </div>
+      <div class="col-lg-12">
+        <trackel-datatable :key="tableKey"></trackel-datatable>
+      </div>
+    </div>
   </div>
 </div>
 {% render_trackel_form %}
 {% endblock content %}
 
 {% block vue %}
+<script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+
 <template id="trackel-dt-btngrp">
-  <div class="btn-group" role="group" aria-label="datatable button group">
+  <div class="btn-group float-right" role="group" aria-label="datatable button group">
     <button type="button" class="btn btn-sm btn-outline-secondary" data-target="#addModal">Add</button>
     <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+    <button v-on:click="refreshTable" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
   </div>
 </template>
 
 <template id="trackel-dt" data-url="{% url url %}">
-  <table id="trackel-table" class="table table-sm table-striped" data-server-side="true" data-ajax="{% url url %}?format=datatables">
+  <table id="tt" class="table table-sm table-striped" data-server-side="true" data-ajax="{% url url %}?format=datatables">
     <thead>
       <tr>
-        <th v-for="(header, key) in headers" :data-data="key">[[ header ]]</th>
+        <th v-for="(header, key) in headers" :data-data="key">[[ header ]]</th>-->
       </tr>
     </thead>
     <tbody>
@@ -43,8 +52,19 @@
 <script type="text/javascript">
   Vue.component('trackel-datatable-btngroup',{
     delimiters: ["[[", "]]"],
-    data: function(){},
-    methods: {},
+    data: function(){
+      return {
+        'data' : [],
+      }
+    },
+    methods: {
+      refreshTable : function(){
+        app.tableKey += 1;
+        this.$nextTick(function(){
+          $('#tt').DataTable();
+        });
+      },
+    },
     template: '#trackel-dt-btngrp'
   });
 
@@ -63,6 +83,7 @@
         $.get(url).done(function(response){
           object.rows = response.results;
           object.headers = object.getHeaders(object);
+          console.log(object.rows);
         });
       },
       formatString: function(string){
@@ -84,13 +105,17 @@
     template: '#trackel-dt'
   });
 
-  var app = Vue({
+  var app = new Vue({
     delimiters: ["[[", "]]"],
     el: '#app',
-  });
-
-  $(document).ready(function() {
-    $('#trackel-table').DataTable();
+    data : {
+      tableKey : 0,
+    },
+    mounted : function(){
+      this.$nextTick(function(){
+        $('#tt').DataTable();
+      });
+    }
   });
 
 </script>

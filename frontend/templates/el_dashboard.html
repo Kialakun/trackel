@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% comment %}
+        Charts
+{% endcomment %}
+<div id="app">
+  <div class="row">
+    <div class="col">
+      <div class="container-fluid">
+        {% comment %}
+                Extract Loss Chart
+        {% endcomment %}
+        <canvas id="el-chart" data-url="/api/ExtractLoss" data-title="Extract Loss"></canvas>
+      </div>
+    </div>
+    <div class="col">
+      <div class="container-fluid">
+        {% comment %}
+                Loss Deployment Chart
+        {% endcomment %}
+        <canvas id="ld-chart" data-url="/api/ExtractLoss" data-title="Loss Deployment"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block vue %}
+{% comment %}
+        Include Chartjs
+{% endcomment %}
+<script src="{% static 'js/Chart.min.js' %}" charset="utf-8"></script>
+
+{% comment %}
+        Vue Instance
+{% endcomment %}
+<script type="text/javascript">
+
+
+  var app = new Vue({
+    el: '#app',
+    delimiters: ["[[", "]]"],
+    mounted: function(){
+      this.$nextTick(function(){
+        this.generateChart('el-chart');
+        this.generateChart('ld-chart');
+      });
+    },
+    data: {},
+    methods: {
+      generateChart: function(id){
+        var element = '#' + id;
+        var c = $(element);
+        var title = c.data('title');
+        $.get(c.data('url')).done(function(response){
+          var ctx = document.getElementById(id).getContext('2d');
+          var chart = new Chart(ctx, {
+              // The type of chart we want to create
+              type: 'bar',
+
+              // The data for our dataset
+              data: {
+                  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                  datasets: [{
+                      label: title,
+                      backgroundColor: 'rgb(0, 128, 0, 0.7)',
+                      borderColor: 'rgb(0, 128, 0)',
+                      data: [0, 10, 5, 2, 20, 30, 45]
+                  }]
+              },
+
+              // Configuration options go here
+              options: {
+                responsive : true,
+              }
+          });
+        });
+      }
+    },
+  });
+
+</script>
+
+{% endblock vue %}

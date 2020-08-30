@@ -5,7 +5,7 @@ from trackel.el.models import ExtractLossData
 class LossDeployment(models.Model):
     """Django data model LossDeployment"""
 
-    shift = models.ForeignKey(ExtractLossData, on_delete=models.CASCADE, related_name='', verbose_name='')
+    shift = models.ForeignKey(ExtractLossData, on_delete=models.CASCADE, related_name='loss_deployment', verbose_name='Shift')
     pkg_filler = models.IntegerField(blank=True, null=True, verbose_name='PKG Filler')
     heuft_1_rejects = models.IntegerField(blank=True, null=True, verbose_name='Heuft 1 Rejects')
     heuft_2_rejects = models.IntegerField(blank=True, null=True, verbose_name='Heuft 2 Rejects')

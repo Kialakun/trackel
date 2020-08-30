@@ -14,10 +14,10 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="{{reverse_url}}" method="post">
+        <form action="#" method="post">
           {% csrf_token %}
           {% load rest_framework %}
-          {{ render_form form }}
+          {% render_form form %}
           <input type="submit" class="btn btn-primary shadow" value="Save">
           <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
         </form>

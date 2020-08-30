@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import os
+from django.contrib.messages import constants as messages
 
 from pathlib import Path
 
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     'pwa',
 
     # apps
+    'trackel.frontend',
     'trackel.el',
     'trackel.products',
     'trackel.shifts',
@@ -131,6 +134,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'trackel', 'static'),
+]
+
 # REST Framework Setup
 
 REST_FRAMEWORK = {
@@ -145,3 +152,42 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 50,
 }
+
+#django contrib messages settings
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+#Progressive web app evironment variables
+PWA_APP_NAME = 'TrackEL'
+PWA_APP_DESCRIPTION = "Extract loss tracking application."
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/trackEL_logo.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/trackEL_logo.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/icons/trackEL_logo.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
