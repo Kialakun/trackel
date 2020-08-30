@@ -10,17 +10,12 @@
 
 <div id="app">
   <div class="table-responsive">
-    <div class="row">
-      <div class="col-lg-12">
-        <trackel-datatable-btngroup></trackel-datatable-btngroup>
-      </div>
-      <div class="col-lg-12">
-        <trackel-datatable :key="tableKey"></trackel-datatable>
-      </div>
-    </div>
+      <trackel-datatable-btngroup></trackel-datatable-btngroup>
+      <trackel-datatable :key="tableKey"></trackel-datatable>
   </div>
+  {% render_trackel_form %}
+
 </div>
-{% render_trackel_form %}
 {% endblock content %}
 
 {% block vue %}
@@ -28,7 +23,7 @@
 
 <template id="trackel-dt-btngrp">
   <div class="btn-group float-right" role="group" aria-label="datatable button group">
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-target="#addModal">Add</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#addModal">Add</button>
     <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
     <button v-on:click="refreshTable" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
   </div>
@@ -38,7 +33,7 @@
   <table id="tt" class="table table-sm table-striped" data-server-side="true" data-ajax="{% url url %}?format=datatables">
     <thead>
       <tr>
-        <th v-for="(header, key) in headers" :data-data="key">[[ header ]]</th>-->
+        <th v-for="header in headers" :data-data="header.label">[[ header.value ]]</th>
       </tr>
     </thead>
     <tbody>
@@ -61,7 +56,9 @@
       refreshTable : function(){
         app.tableKey += 1;
         this.$nextTick(function(){
-          $('#tt').DataTable();
+          $(document).ready(function(){
+            var table = $('#tt').DataTable();
+          });
         });
       },
     },
@@ -97,7 +94,10 @@
         var data = object.rows[0];
         var headers = [];
         for (var key in data) {
-          headers.push({key: object.formatString(key)});
+          headers.push({
+            label : key,
+            value : object.formatString(key)
+          });
         }
         return headers;
       },
@@ -113,7 +113,9 @@
     },
     mounted : function(){
       this.$nextTick(function(){
-        $('#tt').DataTable();
+        $(document).ready(function(){
+          var table = $('#tt').DataTable();
+        });
       });
     }
   });

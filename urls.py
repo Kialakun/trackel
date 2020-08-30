@@ -33,7 +33,7 @@ router.register(r'Supervisors', SupervisorViewSet)
 router.register(r'Rejects', LossDeploymentViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('API/', include(router.urls)),
     path('', include('trackel.frontend.urls')),
     path('admin/', admin.site.urls),
     path('', include('pwa.urls')),

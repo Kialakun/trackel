@@ -12,7 +12,12 @@
         {% comment %}
                 Extract Loss Chart
         {% endcomment %}
-        <canvas id="el-chart" data-url="/api/ExtractLoss" data-title="Extract Loss"></canvas>
+        <canvas id="el-chart" data-url="{% url 'extractlossdata-list' %}" data-title="Extract Loss"></canvas>
+        <div class="btn-group" role="group" aria-label="button group">
+          <button type="button" class="btn btn-sm btn-outline-secondary">Weekly</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Monthly</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Yearly</button>
+        </div>
       </div>
     </div>
     <div class="col">
@@ -20,7 +25,12 @@
         {% comment %}
                 Loss Deployment Chart
         {% endcomment %}
-        <canvas id="ld-chart" data-url="/api/ExtractLoss" data-title="Loss Deployment"></canvas>
+        <canvas id="ld-chart" data-url="{% url 'extractlossdata-list' %}" data-title="Loss Deployment"></canvas>
+        <div class="btn-group" role="group" aria-label="button group ld">
+          <button type="button" class="btn btn-sm btn-outline-secondary">Week: [[ ldChart.ldWeek ]]</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Month: [[ ldChart.ldMonth ]]</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Year: [[ ldChart.ldYear ]]</button>
+        </div>
       </div>
     </div>
   </div>
@@ -45,11 +55,70 @@
     mounted: function(){
       this.$nextTick(function(){
         this.generateChart('el-chart');
-        this.generateChart('ld-chart');
+        this.generateLdChart('ld-chart');
       });
     },
-    data: {},
+    data: {
+      months : [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      ldChart : {
+        ldWeek : 26,
+        ldMonth : 'January',
+        ldYear: 2020,
+      },
+      elChart: {
+        elWeek : 26,
+        elMonth : 'January',
+        elYear : 2020,
+      },
+    },
     methods: {
+      generateLdChart : function(id){
+        var element = '#' + id;
+        var c = $(element);
+        var title = c.data('title');
+        //ajax call
+        $.get(c.data('url')).done(function(response){
+          var ctx = document.getElementById(id).getContext('2d');
+          var chart = new Chart(ctx, {
+              // The type of chart we want to create
+              type: 'bar',
+
+              // The data for our dataset
+              data: {
+                  labels: ['SPL', 'NIB', 'Chiller'],
+                  datasets: [{
+                    label: 'Heuft 1 Rejects',
+                    backgroundColor: 'rgb(0, 128, 0, 0.7)',
+                    borderColor: 'rgb(0, 128, 0)',
+                    data: [0, 10, 5]
+                  }, {
+                    label : 'Target',
+                    borderColor: 'rgb(0, 128, 255)',
+                    data: [4, 4, 4],
+                    type: 'line',
+                }, {
+                    label: 'Heuft 2 Rejects',
+                    backgroundColor: 'rgb(128, 255, 0, 0.7)',
+                    borderColor: 'rgb(128, 255, 0)',
+                    data: [5, 8, 3]
+                }]
+              },
+            });
+          });
+      },
       generateChart: function(id){
         var element = '#' + id;
         var c = $(element);
