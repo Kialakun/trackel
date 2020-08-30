@@ -11,17 +11,11 @@ class ExtractLossDataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ExtractLossDataMonthSummarySerializer(serializers.Serializer):
-    jan = serializers.SerializerMethodField()
-    feb = serializers.SerializerMethodField()
-    mar = serializers.SerializerMethodField()
-    apr = serializers.SerializerMethodField()
-    may = serializers.SerializerMethodField()
-    jun = serializers.SerializerMethodField()
-    jul = serializers.SerializerMethodField()
-    aug = serializers.SerializerMethodField()
-    sep = serializers.SerializerMethodField()
-    oct = serializers.SerializerMethodField()
-    nov = serializers.SerializerMethodField()
-    dec = serializers.SerializerMethodField()
+    month = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField()
 
-    def get_jan(self, instance)
+    def get_month(self, instance):
+        return instance['month']
+
+    def get_value(self, instance):
+        q = ExtractLossData.objects.filter(date__month=instance['month'])
