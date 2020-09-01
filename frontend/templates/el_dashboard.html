@@ -15,8 +15,8 @@
         <canvas id="el-chart" data-url="{% url 'extractlossdata-list' %}" data-title="Extract Loss"></canvas>
         <div class="btn-group" role="group" aria-label="button group">
           <button type="button" class="btn btn-sm btn-outline-secondary">Weekly</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Monthly</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Yearly</button>
+          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary">Monthly</button>
+          <button v-on:click="getElMonthData" type="button" class="btn btn-sm btn-outline-secondary">Yearly</button>
         </div>
       </div>
     </div>
@@ -25,11 +25,12 @@
         {% comment %}
                 Loss Deployment Chart
         {% endcomment %}
-        <canvas id="ld-chart" data-url="{% url 'extractlossdata-list' %}" data-title="Loss Deployment"></canvas>
+        <canvas id="ld-chart" data-url="{% url 'RejectsMonthSummary' %}" data-title="Loss Deployment"></canvas>
         <div class="btn-group" role="group" aria-label="button group ld">
-          <button type="button" class="btn btn-sm btn-outline-secondary">Week: [[ ldChart.ldWeek ]]</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Month: [[ ldChart.ldMonth ]]</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Year: [[ ldChart.ldYear ]]</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Week</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Month</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">Year</button>
+          <span>W: , M: , Y: </span>
         </div>
       </div>
     </div>
@@ -54,92 +55,90 @@
     delimiters: ["[[", "]]"],
     mounted: function(){
       this.$nextTick(function(){
-        this.generateChart('el-chart');
+        var obj = this;
+        this.getElMonthData(obj);
         this.generateLdChart('ld-chart');
       });
     },
     data: {
-      months : [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ],
-      ldChart : {
-        ldWeek : 26,
-        ldMonth : 'January',
-        ldYear: 2020,
-      },
-      elChart: {
-        elWeek : 26,
-        elMonth : 'January',
-        elYear : 2020,
-      },
+      elMonthlyLabels : [],
+      elMonthlyData : [],
+      elWeeklyLabels : [],
+      elWeeklyData : [],
     },
     methods: {
+      setElWeeklyChartData: function(){
+        var d = this.elWeeklyData;
+        var labels = [];
+        var data = [];
+        for (var key in d){
+          for (var item in d[key]){
+            labels.push(item);
+            data.push(d[key][item]);
+          }
+        }
+        this.elWeeklyLabels = labels;
+        this.elWeeklyData = data;
+      },
+      setElMonthlyChartData: function(){
+        var d = this.elMonthlyData;
+        var labels = [];
+        var data = [];
+        for (var key in d){
+          for (var item in d[key]){
+            labels.push(item);
+            data.push(d[key][item]);
+          }
+        }
+        this.elMonthlyLabels = labels;
+        this.elMonthlyData = data;
+      },
+      getElWeekData: function(object){
+        const url = '/API/ElWeeklySummary';
+        $.get(url).done(function(response){
+          object.elWeeklyData = response.data;
+        });
+      },
+      getElMonthData: function(object){
+        const url = '/API/ElMonthlySummary';
+        $.get(url).done(function(response){
+          object.elMonthlyData = response.data;
+          object.setElMonthlyChartData();
+          object.generateChart('el-chart');
+        });
+      },
       generateLdChart : function(id){
         var element = '#' + id;
         var c = $(element);
         var title = c.data('title');
         //ajax call
         $.get(c.data('url')).done(function(response){
+          var data = response.data;
+          console.log(data);
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
               type: 'bar',
 
               // The data for our dataset
-              data: {
-                  labels: ['SPL', 'NIB', 'Chiller'],
-                  datasets: [{
-                    label: 'Heuft 1 Rejects',
-                    backgroundColor: 'rgb(0, 128, 0, 0.7)',
-                    borderColor: 'rgb(0, 128, 0)',
-                    data: [0, 10, 5]
-                  }, {
-                    label : 'Target',
-                    borderColor: 'rgb(0, 128, 255)',
-                    data: [4, 4, 4],
-                    type: 'line',
-                }, {
-                    label: 'Heuft 2 Rejects',
-                    backgroundColor: 'rgb(128, 255, 0, 0.7)',
-                    borderColor: 'rgb(128, 255, 0)',
-                    data: [5, 8, 3]
-                }]
-              },
+              data: data,
             });
           });
       },
-      generateChart: function(id){
+      generateChart: function(id, labels, data){
         var element = '#' + id;
         var c = $(element);
         var title = c.data('title');
         $.get(c.data('url')).done(function(response){
+          var data = response.data;
+
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
               type: 'bar',
 
               // The data for our dataset
-              data: {
-                  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                  datasets: [{
-                      label: title,
-                      backgroundColor: 'rgb(0, 128, 0, 0.7)',
-                      borderColor: 'rgb(0, 128, 0)',
-                      data: [0, 10, 5, 2, 20, 30, 45]
-                  }]
-              },
-
+              data: data,
               // Configuration options go here
               options: {
                 responsive : true,

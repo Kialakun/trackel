@@ -9,13 +9,3 @@ class ExtractLossDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtractLossData
         fields = '__all__'
-
-class ExtractLossDataMonthSummarySerializer(serializers.Serializer):
-    month = serializers.SerializerMethodField()
-    value = serializers.SerializerMethodField()
-
-    def get_month(self, instance):
-        return instance['month']
-
-    def get_value(self, instance):
-        q = ExtractLossData.objects.filter(date__month=instance['month'])

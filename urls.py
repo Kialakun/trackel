@@ -37,4 +37,6 @@ urlpatterns = [
     path('', include('trackel.frontend.urls')),
     path('admin/', admin.site.urls),
     path('', include('pwa.urls')),
+    path('', include('trackel.el.urls')),
+    path('', include('trackel.rejects.urls')),
 ]
