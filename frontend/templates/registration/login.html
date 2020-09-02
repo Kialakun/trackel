@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load crispy_forms_tags %}
 {% load pwa %}
 
 <head>
@@ -33,7 +34,7 @@
         <!--img class="card-img-top" data-src="{% static "images/DOW_LOGO.png" %}" alt="DOW"-->
         <form class="container" method="post">
           {% csrf_token %}
-          {{ form }}
+          {{ form | crispy }}
           <input class="btn btn-sm btn-outline-success m-3" type="submit" value="Login" />
         </form>
       </div>

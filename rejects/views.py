@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from rest_framework import viewsets
 from rest_framework import permissions
+from drf_renderer_xlsx.mixins import XLSXFileMixin
+from drf_renderer_xlsx.renderers import XLSXRenderer
 from trackel.products.models import Product
 from .serializers import LossDeploymentSerializer
 from .models import LossDeployment
@@ -90,3 +92,11 @@ class LossDeploymentViewSet(viewsets.ModelViewSet):
     serializer_class = LossDeploymentSerializer
     queryset = LossDeployment.objects.all()
     permission_classes = [permissions.IsAuthenticated, ]
+
+class LossDeploymentExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
+    """View set for loss deployment exporting to .xlsx file"""
+    queryset = LossDeployment.objects.all()
+    serializer_class = LossDeploymentSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+    renderer_classes = (XLSXRenderer,)
+    filename = 'lossdeployment.xlsx'
