@@ -36,6 +36,7 @@ urlpatterns = [
     path('API/', include(router.urls)),
     path('', include('trackel.frontend.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', include('pwa.urls')),
     path('', include('trackel.el.urls')),
     path('', include('trackel.rejects.urls')),

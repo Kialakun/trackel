@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load pwa %}
+
+<head>
+  <!--required meta tags-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Department of Works - Plant and Transport Division: Database App">
+  <meta name="author" content="Mr. Kialakun Galgal">
+  {% progressive_web_app_meta %}
+
+  <title>TrackEL</title>
+    <!-- Page level plugin CSS-->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-success">
+  {% if user.authenticated %}
+  <h1>Hi {{ user.username }}</h1>
+  <p><a href="{% url 'logout' %}">Logout</a></p>
+  {% else %}
+  <div class="container">
+    <div class="card card-login mx-auto mt-5 mb-5 shadow-lg">
+      <div class="card-header bg-white">
+        <h2>
+          <div class="btn btn-success mr-5">TrackEL</div>
+        </h2>
+      </div>
+      <div class="card-body">
+        <!--img class="card-img-top" data-src="{% static "images/DOW_LOGO.png" %}" alt="DOW"-->
+        <form class="container" method="post">
+          {% csrf_token %}
+          {{ form }}
+          <input class="btn btn-sm btn-outline-success m-3" type="submit" value="Login" />
+        </form>
+      </div>
+      </div>
+    </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  {% endif %}
+</body>
+</html>

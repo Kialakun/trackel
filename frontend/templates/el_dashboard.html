@@ -7,30 +7,29 @@
 {% endcomment %}
 <div id="app">
   <div class="row">
-    <div class="col">
+    <div class="col-g-6 col-md-6 col-sm-12">
       <div class="container-fluid">
         {% comment %}
                 Extract Loss Chart
         {% endcomment %}
-        <canvas id="el-chart" data-url="{% url 'extractlossdata-list' %}" data-title="Extract Loss"></canvas>
+        <canvas id="el-chart" data-url="{% url 'ElMonthSummary' %}" data-title="Extract Loss"></canvas>
         <div class="btn-group" role="group" aria-label="button group">
-          <button type="button" class="btn btn-sm btn-outline-secondary">Weekly</button>
-          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary">Monthly</button>
-          <button v-on:click="getElMonthData" type="button" class="btn btn-sm btn-outline-secondary">Yearly</button>
+          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary disabled">W[[ week ]]</button>
+          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary">[[ month ]]</button>
+          <button v-on:click="getElMonthData" type="button" class="btn btn-sm btn-outline-secondary">[[ year ]]</button>
         </div>
       </div>
     </div>
-    <div class="col">
+    <div class="col-lg-6 col-md-6 col-sm-12">
       <div class="container-fluid">
         {% comment %}
                 Loss Deployment Chart
         {% endcomment %}
         <canvas id="ld-chart" data-url="{% url 'RejectsMonthSummary' %}" data-title="Loss Deployment"></canvas>
         <div class="btn-group" role="group" aria-label="button group ld">
-          <button type="button" class="btn btn-sm btn-outline-secondary">Week</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Month</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Year</button>
-          <span>W: , M: , Y: </span>
+          <button type="button" class="btn btn-sm btn-outline-secondary">W[[ week ]]</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">[[  month ]]</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary">[[ year ]]</button>
         </div>
       </div>
     </div>
@@ -56,17 +55,50 @@
     mounted: function(){
       this.$nextTick(function(){
         var obj = this;
+        var date = this.getMonthYear();
+        this.month = date[0];
+        this.year = date[1];
+        this.week = this.getWeek();
         this.getElMonthData(obj);
         this.generateLdChart('ld-chart');
       });
     },
     data: {
+      month : 0,
+      year : 0,
+      week : 0,
       elMonthlyLabels : [],
       elMonthlyData : [],
       elWeeklyLabels : [],
       elWeeklyData : [],
     },
     methods: {
+      getMonthYear : function(){
+        var months = {
+          '01' : 'January',
+          '02' : 'February',
+          '03' : 'March',
+          '04' : 'April',
+          '05' : 'May',
+          '06' : 'June',
+          '07' : 'July',
+          '08' : 'August',
+          '09' : 'September',
+          '10' : 'October',
+          '11' : 'November',
+          '12' : 'December',
+        }
+        var today = new Date();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+        return [months[mm], yyyy];
+      },
+      getWeek : function(){
+        let now = new Date();
+        let onejan = new Date(now.getFullYear(), 0, 1);
+        week = Math.ceil( (((now - onejan) / 86400000) + onejan.getDay() + 1) / 7 );
+        return week;
+      },
       setElWeeklyChartData: function(){
         var d = this.elWeeklyData;
         var labels = [];
@@ -94,13 +126,13 @@
         this.elMonthlyData = data;
       },
       getElWeekData: function(object){
-        const url = '/API/ElWeeklySummary';
+        const url = '/api/ElWeekSummary';
         $.get(url).done(function(response){
           object.elWeeklyData = response.data;
         });
       },
       getElMonthData: function(object){
-        const url = '/API/ElMonthlySummary';
+        const url = '/api/ElMonthSummary';
         $.get(url).done(function(response){
           object.elMonthlyData = response.data;
           object.setElMonthlyChartData();
@@ -125,13 +157,13 @@
             });
           });
       },
-      generateChart: function(id, labels, data){
+      generateChart: function(id){
         var element = '#' + id;
         var c = $(element);
         var title = c.data('title');
         $.get(c.data('url')).done(function(response){
           var data = response.data;
-
+          console.log(response);
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create

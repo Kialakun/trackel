@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
 
 from pathlib import Path
@@ -28,8 +29,8 @@ SECRET_KEY = 'k=q$*@9e7n_g8d74wks)$iu3p-!+w#k_#=ib0#f0y6z24kax88'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
+LOGOUT_REDIRECT_URL = reverse_lazy('login')
 # Application definition
 
 INSTALLED_APPS = [

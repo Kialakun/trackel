@@ -70,8 +70,12 @@ def month_summary_view(request):
             ).annotate(heuft_2_rejects_total=Sum('heuft_2_rejects'))
 
         labels.append(str(product))
-        datasets[0]['data'].append(float(q[0].heuft_1_rejects_total))
-        datasets[1]['data'].append(float(q[0].heuft_2_rejects_total))
+        if q:
+            datasets[0]['data'].append(float(q[0].heuft_1_rejects_total) if q[0].heuft_1_rejects_total else 0)
+            datasets[1]['data'].append(float(q[0].heuft_2_rejects_total) if q[0].heuft_2_rejects_total else 0)
+        else:
+            datasets[0]['data'].append(0)
+            datasets[1]['data'].append(0)
 
     data = {
         'data' : {
