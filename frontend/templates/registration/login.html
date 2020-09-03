@@ -23,23 +23,23 @@
   <h1>Hi {{ user.username }}</h1>
   <p><a href="{% url 'logout' %}">Logout</a></p>
   {% else %}
-  <div class="container">
-    <div class="card card-login mx-auto mt-5 mb-5 shadow-lg">
-      <div class="card-header bg-white">
-        <h2>
-          <div class="btn btn-success mr-5">TrackEL</div>
-        </h2>
-      </div>
+  <div class="d-flex mt-5 justify-content-center">
+    <h1 class="text-white">TrackEL</h1>
+  </div>
+  <div class="d-flex flex-row justify-content-center">
+    <p class="text-white font-italic small">Extract Loss Tracker</p>
+  </div>
+  <div class="d-flex justify-content-center">
+    <div class="card mt-5 mb-5 shadow-lg">
       <div class="card-body">
-        <!--img class="card-img-top" data-src="{% static "images/DOW_LOGO.png" %}" alt="DOW"-->
-        <form class="container" method="post">
+        <form method="post">
           {% csrf_token %}
           {{ form | crispy }}
-          <input class="btn btn-sm btn-outline-success m-3" type="submit" value="Login" />
+          <input class="btn btn-outline-success m-3" type="submit" value="Login" />
         </form>
       </div>
       </div>
-    </div>
+  </div>
   <!-- Bootstrap core JavaScript-->
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>

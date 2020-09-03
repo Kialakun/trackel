@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.db.models import Sum
 from rest_framework import viewsets
 from rest_framework import permissions
+from drf_renderer_xlsx.mixins import XLSXFileMixin
+from drf_renderer_xlsx.renderers import XLSXRenderer
 from .serializers import ExtractLossDataSerializer
 from .models import ExtractLossData
 # Create your views here.
@@ -14,6 +16,14 @@ class ExtractLossDataViewSet(viewsets.ModelViewSet):
     serializer_class = ExtractLossDataSerializer
     queryset = ExtractLossData.objects.all().order_by('-date')
     permission_classes = [permissions.IsAuthenticated, ]
+
+class ExtractLossDataExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
+    """View set for Extract Loss Data"""
+    serializer_class = ExtractLossDataSerializer
+    queryset = ExtractLossData.objects.all().order_by('-date')
+    permission_classes = [permissions.IsAuthenticated, ]
+    renderer_classes = [XLSXRenderer,]
+    file_name = 'extractlossdata.xlsx'
 
 def monthly_summary_view(request):
     """API for dashboard charts"""

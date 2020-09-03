@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from trackel.el.serializers import ExtractLossDataSerializer
 from trackel.products.serializers import ProductSerializer
 from trackel.shifts.serializers import ShiftSerializer
@@ -11,6 +12,7 @@ def lossdeployment_view(request):
         "page_title" : "Loss Deployment",
         "form" : LossDeploymentSerializer,
         "url" : "lossdeployment-list",
+        "export_url": "rejectsexport-list"
     }
     return render(request, 'datatables.html', context=context)
 
@@ -19,7 +21,8 @@ def products_view(request):
     context = {
         "page_title" : "Products",
         "form" : ProductSerializer,
-        "url" : "product-list"
+        "url" : "product-list",
+        "export_url": "productsexport-list"
     }
     return render(request, 'datatables.html', context=context)
 
@@ -38,6 +41,7 @@ def el_view(request):
         "page_title" : "Extract Loss",
         "form" : ExtractLossDataSerializer,
         "url" : "extractlossdata-list",
+        "export_url" : "extractlossexport-list"
     }
     return render(request, 'datatables.html', context=context)
 
@@ -46,7 +50,8 @@ def supervisors_view(request):
     context = {
         "page_title" : "Supervisors",
         "form" : SupervisorSerializer,
-        "url" : "supervisor-list"
+        "url" : "supervisor-list",
+        "export_url" : "supervisorsexport-list"
     }
     return render(request, 'datatables.html', context=context)
 
@@ -55,6 +60,7 @@ def shifts_view(request):
     context = {
         "page_title" : "Shifts",
         "form" : ShiftSerializer,
-        "url" : "shift-list"
+        "url" : "shift-list",
+        "export_url" : "shiftsexport-list"
     }
     return render(request, 'datatables.html', context=context)

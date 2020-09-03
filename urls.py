@@ -18,20 +18,24 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 """ViewSet Imports"""
-from trackel.el.views import ExtractLossDataViewSet
-from trackel.products.views import ProductViewSet
-from trackel.shifts.views import ShiftViewSet
+from trackel.el.views import ExtractLossDataViewSet, ExtractLossDataExportViewSet
+from trackel.products.views import ProductViewSet, ProductExportViewSet
+from trackel.shifts.views import ShiftViewSet, ShiftExportViewSet
 from trackel.rejects.views import LossDeploymentViewSet, LossDeploymentExportViewSet
-from trackel.supervisors.views import SupervisorViewSet
+from trackel.supervisors.views import SupervisorViewSet, SupervisorExportViewSet
 
 router = DefaultRouter()
 
 router.register(r'ExtractLoss', ExtractLossDataViewSet)
+router.register(r'ExtractLossExport', ExtractLossDataExportViewSet, basename='extractlossexport')
 router.register(r'Products', ProductViewSet)
+router.register(r'ProductsExport', ProductExportViewSet, basename='productsexport')
 router.register(r'Shifts', ShiftViewSet)
+router.register(r'ShiftsExport', ShiftExportViewSet, basename='shiftsexport')
 router.register(r'Supervisors', SupervisorViewSet)
+router.register(r'SupervisorsExport', SupervisorExportViewSet, basename='supervisorsexport')
 router.register(r'Rejects', LossDeploymentViewSet)
-router.register(r'RejectsExport', LossDeploymentViewSet)
+router.register(r'RejectsExport', LossDeploymentExportViewSet, basename='rejectsexport')
 
 urlpatterns = [
     path('API/', include(router.urls)),

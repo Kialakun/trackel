@@ -194,3 +194,6 @@ PWA_APP_SPLASH_SCREEN = [
 ]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
+
+# crispy forms setup
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -67,7 +67,7 @@ def month_summary_view(request):
     ]
 
     for product in products:
-        q = LossDeployment.objects.filter(shift__date__month=month
+        q = LossDeployment.objects.filter(extract_loss_record__date__month=month
             ).annotate(heuft_1_rejects_total=Sum('heuft_1_rejects')
             ).annotate(heuft_2_rejects_total=Sum('heuft_2_rejects'))
 

@@ -24,7 +24,7 @@
 <template id="trackel-dt-btngrp">
   <div class="btn-group float-right" role="group" aria-label="datatable button group">
     <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#addModal">Add</button>
-    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+    <a type="button" class="btn btn-sm btn-outline-secondary" href="{% url export_url %}">Export</a>
     <button v-on:click="refreshTable" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
   </div>
 </template>

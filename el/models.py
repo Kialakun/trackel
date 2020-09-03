@@ -28,7 +28,7 @@ class ExtractLossData(models.Model):
     LINES = (('can', 'Can Line'), ('bottle', 'Bottle Line'))
 
     week = models.IntegerField(blank=True, null=True)
-    date = models.DateField(default=datetime.date.today, verbose_name='Date')
+    date = models.DateField(default=datetime.date.today, verbose_name='Week End Date')
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='shift_extract_loss_data', verbose_name='Shift')
     shift_type = models.CharField(blank=True, max_length=100, choices=SHIFT_TYPE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_extract_loss', verbose_name='Product')
@@ -46,7 +46,7 @@ class ExtractLossData(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        return "W" + str(self.week) + " | " + str(self.date) + " | " + str(self.shift)
+        return "EL-" + str(self.id) + " | W" + str(self.week) + " | " + str(self.date) + " | " + str(self.shift)
 
     def __unicode__(self):
         pass
