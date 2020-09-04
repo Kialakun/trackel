@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_datatables',
     'pwa',
     'crispy_forms',
+    'drfformbootstrap4',
 
     # apps
     'trackel.frontend',

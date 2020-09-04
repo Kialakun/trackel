@@ -1,6 +1,8 @@
 {% comment %}
         Displaying Forms in a Modal
 {% endcomment %}
+{% load rest_framework %}
+
 <div class="modal fade" id="addModal">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -15,9 +17,12 @@
       </div>
       <div class="modal-body">
         <form action="#" method="post">
-          {% csrf_token %}
-          {% load rest_framework %}
-          {% render_form form %}
+          <div class="container">
+            <fieldset class="form-group">
+              {% csrf_token %}
+              {% render_form form template_pack='drfformbootstrap4/horizontal' %}
+            </fieldset>
+          </div>
           <input type="submit" class="btn btn-primary shadow" value="Save">
           <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
         </form>

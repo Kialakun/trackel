@@ -1,12 +1,16 @@
 from rest_framework import serializers
+from trackel.el.models import ExtractLossData
+from trackel.utils.custom_serializer_fields import ExtractLossDataField
 from .models import LossDeployment
 
 class LossDeploymentSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
-    record = serializers.CharField(source='extract_loss_record', read_only=True)
+    extract_loss_record = ExtractLossDataField(queryset=ExtractLossData.objects.all())
+
     class Meta:
         model = LossDeployment
         fields = '__all__'
+        depth = 1
 
 class LossDeploymentSummarySerializer(serializers.Serializer):
     """Loss deployment summary serializer takes a querset and returns summary"""

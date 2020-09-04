@@ -29,8 +29,6 @@ class ExtractLossData(models.Model):
 
     week = models.IntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.date.today, verbose_name='Week End Date')
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='shift_extract_loss_data', verbose_name='Shift')
-    shift_type = models.CharField(blank=True, max_length=100, choices=SHIFT_TYPE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_extract_loss', verbose_name='Product')
     line = models.CharField(blank=True, max_length=100, choices=LINES, verbose_name='Line')
     og = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='OG')

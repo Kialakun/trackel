@@ -5,6 +5,7 @@ from django.db import models
 class Product(models.Model):
     """Django data model Products"""
     PACKETS = (('24s', '24s'), ('4x6s', '4x6s'))
+    
     product_name = models.CharField(blank=True, max_length=100)
     product_packaging = models.CharField(blank=True, max_length=100, choices=PACKETS)
     product_code = models.CharField(blank=True, max_length=8, null=True)
