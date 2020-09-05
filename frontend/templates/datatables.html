@@ -10,7 +10,9 @@
 <div id="app">
   <div class="table-responsive">
       <trackel-datatable-btngroup></trackel-datatable-btngroup>
-      <trackel-datatable :key="tableKey"></trackel-datatable>
+      <div :key="tableKey">
+        <trackel-datatable ref="tableRef"></trackel-datatable>
+      </div>
   </div>
   <div id="formUrl" data-url="{% url url %}"></div>
   <trackel-modal-form :key="modalFormKey"></trackel-modal-form>
@@ -117,17 +119,18 @@
 
   Vue.component('trackel-datatable-btngroup',{
     delimiters: ["[[", "]]"],
-    data: function(){
+    data: function () {
       return {
         'data' : [],
       }
     },
     methods: {
-      refreshTable : function(){
+      refreshTable : function () {
         app.tableKey += 1;
-        this.$nextTick(function(){
-          $(document).ready(function(){
-            var table = $('#tt').DataTable();
+        app.$refs.tableRef.getData();
+        app.$nextTick(function () {
+          $(document).ready(function () {
+            $('#tt').DataTable();
           });
         });
       },
@@ -138,14 +141,14 @@
   Vue.component('trackel-datatable',{
     delimiters: ["[[", "]]"],
     data: function(){
-      var obj = this;
       return {
         'headers': [],
-        'rows': this.getData(obj)
+        'rows': this.getData()
       }
     },
     methods: {
-      getData: function(object){
+      getData: function(){
+        var object = this;
         var url = $('#trackel-dt').data('url');
         $.get(url).done(function(response){
           object.rows = response.results;

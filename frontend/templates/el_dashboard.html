@@ -12,10 +12,11 @@
         {% comment %}
                 Extract Loss Chart
         {% endcomment %}
+        <h6 :key="elChartKey">[[ elChartTitle ]]</h6>
         <canvas :key="elChartKey" id="el-chart" data-title="Extract Loss"></canvas>
         <div class="btn-group" role="group" aria-label="button group">
-          <button v-on:click="setElChartUnit('week')" type="button" class="btn btn-sm btn-outline-secondary">Month</button>
-          <button v-on:click="setElChartUnit('month')" type="button" class="btn btn-sm btn-outline-secondary">Year</button>
+          <button v-on:click="setElChartUnit('week')" type="button" class="btn btn-sm btn-outline-secondary">Weeks</button>
+          <button v-on:click="setElChartUnit('month')" type="button" class="btn btn-sm btn-outline-secondary">Months</button>
         </div>
       </div>
     </div>
@@ -24,6 +25,7 @@
         {% comment %}
                 Loss Deployment Chart
         {% endcomment %}
+        <h6>[[ ldChartTitle ]]</h6>
         <canvas id="ld-chart" data-url="{% url 'RejectsMonthSummary' %}" data-title="Loss Deployment"></canvas>
         <div class="btn-group" role="group" aria-label="button group ld">
           <button type="button" class="btn btn-sm btn-outline-secondary">W[[ week ]]</button>
@@ -59,6 +61,8 @@
       });
     },
     data: {
+      ldChartTitle: 'Loss Deployment',
+      elChartTitle: 'Extract Loss By Month',
       elChartUrl: '/api/ElMonthSummary',
       elChartUnit: 'month',
       elChartKey: 0,
@@ -71,8 +75,10 @@
         this.elChartUnit = unit;
 
         if (unit === 'week') {
+          this.elChartTitle = 'Extract Loss By Week';
           this.elChartUrl = '/api/ElWeekSummary';
         } else {
+          this.elChartTitle = 'Extract Loss By Month';
           this.elChartUrl = '/api/ElMonthSummary';
         }
 
@@ -119,7 +125,7 @@
           var d = obj.formatData(response.results);
           var data = {
             datasets: [{
-              label: 'Extract Loss',
+              label: 'Extract Loss %',
               backgroundColor: 'rgb(0,10,255, 0.5)',
               borderColor: 'rgb(0,10,255)',
               borderWidth: 0.5,
@@ -132,7 +138,7 @@
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
-              type: 'bar',
+              type: 'line',
 
               // The data for our dataset
               data: data,

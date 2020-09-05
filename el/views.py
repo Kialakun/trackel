@@ -3,6 +3,7 @@ import calendar
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Sum, F, Count
+from django.db.models.functions import ExtractMonth, ExtractWeek
 from rest_framework import viewsets, generics
 from rest_framework import permissions
 from drf_renderer_xlsx.mixins import XLSXFileMixin
@@ -13,12 +14,12 @@ from trackel.products.models import Product
 # Create your views here.
 class ElByProductMonthSummary(generics.ListAPIView):
     serializer_class = ElByProductMonthSummary
-    queryset = ExtractLossData.objects.values('month').annotate(Count('extract_loss_packaging'))
+    queryset = ExtractLossData.objects.annotate(m=ExtractMonth('date')).values('m').annotate(count=Count('m')).order_by('-m')
     permission_classes = [permissions.IsAuthenticated, ]
 
 class ElByProductWeekSummary(generics.ListAPIView):
     serializer_class = ElByProductWeekSummary
-    queryset = ExtractLossData.objects.values('week').annotate(Count('week'))
+    queryset = ExtractLossData.objects.annotate(w=ExtractWeek('date')).values('w').annotate(count=Count('w')).order_by('-w')
     permission_classes = [permissions.IsAuthenticated, ]
 
 class ExtractLossDataViewSet(viewsets.ModelViewSet):

@@ -17,18 +17,18 @@ class ElByProductWeekSummary(serializers.Serializer):
     date = serializers.SerializerMethodField()
     week = serializers.SerializerMethodField()
     el = serializers.SerializerMethodField()
-    week__count = serializers.IntegerField()
+    count = serializers.IntegerField()
 
     def get_week(self, instance):
-        return instance['week']
+        return instance['w']
 
     def get_date(self, instance):
-        w = instance['week']
+        w = instance['w']
         q = ExtractLossData.objects.filter(date__week=w).order_by('-date')[0]
         return q.date
 
     def get_el(self, instance):
-        w = instance['week']
+        w = instance['w']
         q = ExtractLossData.objects.filter(date__week=w).aggregate(total=Sum('extract_loss_packaging'))
         return q['total']
 
@@ -36,17 +36,17 @@ class ElByProductMonthSummary(serializers.Serializer):
     date = serializers.SerializerMethodField()
     month = serializers.SerializerMethodField()
     el = serializers.SerializerMethodField()
-    extract_loss_packaging__count = serializers.IntegerField()
+    count = serializers.IntegerField()
 
     def get_month(self, instance):
-        return instance['month']
+        return instance['m']
 
     def get_date(self, instance):
-        m = instance['month']
+        m = instance['m']
         q = ExtractLossData.objects.filter(date__month=m).order_by('-date')[0]
         return q.date
 
     def get_el(self, instance):
-        m = instance['month']
+        m = instance['m']
         q = ExtractLossData.objects.filter(date__month=m).aggregate(total=Sum('extract_loss_packaging'))
         return q['total']

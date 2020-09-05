@@ -104,7 +104,8 @@ DATABASES = {
         "USER": os.environ.get("SQL_USER", "admin"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "adminpassword"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432")    }
+        "PORT": os.environ.get("SQL_PORT", "5432")
+    }
 }
 
 
@@ -146,7 +147,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'trackel', 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'trackel', 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'trackel', 'static'),
