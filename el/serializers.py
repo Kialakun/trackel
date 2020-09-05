@@ -1,24 +1,41 @@
 from rest_framework import serializers
 from trackel.products.models import Product
 from trackel.shifts.models import Shift
-from trackel.utils.custom_serializer_fields import ShiftField, ProductField
+from trackel.utils.custom_serializer_fields import MonthField, ShiftField
 from .models import ExtractLossData
 
 class ExtractLossDataSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
-
-    product = ProductField(queryset=Product.objects.all())
-
+    month = MonthField(read_only=True)
+    week = serializers.IntegerField(read_only=True)
     class Meta:
         model = ExtractLossData
         fields = '__all__'
 
 class ElByProductWeekSummary(serializers.Serializer):
+    date = serializers.SerializerMethodField()
     week = serializers.SerializerMethodField()
     el = serializers.SerializerMethodField()
 
     def get_week(self, instance):
         return instance['week']
+
+    def get_date(self, instance):
+        return instance['date']
+
+    def get_el(self, instance):
+        return instance['el']
+
+class ElByProductMonthSummary(serializers.Serializer):
+    #date = serializers.SerializerMethodField()
+    month = serializers.SerializerMethodField()
+    el = serializers.SerializerMethodField()
+
+    def get_month(self, instance):
+        return instance['month']
+
+    #def get_date(self, instance):
+    #    return instance['date']
 
     def get_el(self, instance):
         return instance['el']

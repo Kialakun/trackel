@@ -89,12 +89,27 @@
           data[form[name]['name']] = form[name]['value'];
         }
         $.post(url, data, function (data, status) {
-          alert("Done: " + data + " status: " + status);
+          $('#addModal').modal('hide');
+          alert("Done:Saved Successfully!");
         }).fail(function (xhr, status, error) {
-          alert("Fail: " + error + " status: " + status + " xhr: " + xhr);
-          console.log(xhr.responseJSON);
+          for (var v in xhr.responseJSON) {
+            var id = '#id_' + v;
+            var e = $(id);
+            //get the parent id to append elements later
+            var parent = e.parent();
+            e.addClass('is-invalid');
+            //create notifications from JSON response
+            var small = '<small class="text-danger">' + xhr.responseJSON[v][0] + '</small>';
+            parent.append(small);
+
+            var item = "label[for='id_" + v + "']";
+            var o = $(item).addClass('text-danger');
+            //if there is a help text, remove it
+            if ($('#help_' + v)) {
+              $('#help_' + v).empty();
+            }
+          }
         });
-        console.log(data);
       },
     },
     template: '#modalForm'

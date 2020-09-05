@@ -12,11 +12,10 @@
         {% comment %}
                 Extract Loss Chart
         {% endcomment %}
-        <canvas id="el-chart" data-url="{% url 'ElMonthSummary' %}" data-title="Extract Loss"></canvas>
+        <canvas :key="elChartKey" id="el-chart" data-title="Extract Loss"></canvas>
         <div class="btn-group" role="group" aria-label="button group">
-          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary disabled">W[[ week ]]</button>
-          <button v-on:click="getElWeekData" type="button" class="btn btn-sm btn-outline-secondary">[[ month ]]</button>
-          <button v-on:click="getElMonthData" type="button" class="btn btn-sm btn-outline-secondary">[[ year ]]</button>
+          <button v-on:click="setElChartUnit('week')" type="button" class="btn btn-sm btn-outline-secondary">Month</button>
+          <button v-on:click="setElChartUnit('month')" type="button" class="btn btn-sm btn-outline-secondary">Year</button>
         </div>
       </div>
     </div>
@@ -55,49 +54,42 @@
     mounted: function(){
       this.$nextTick(function(){
         var obj = this;
-        var date = this.getMonthYear();
-        this.month = date[0];
-        this.year = date[1];
-        this.week = this.getWeek();
-        this.getElMonthData(obj);
+        this.generateChart('el-chart');
         this.generateLdChart('ld-chart');
       });
     },
     data: {
+      elChartUrl: '/api/ElMonthSummary',
+      elChartUnit: 'month',
+      elChartKey: 0,
       month : 0,
       year : 0,
       week : 0,
-      elMonthlyLabels : [],
-      elMonthlyData : [],
-      elWeeklyLabels : [],
-      elWeeklyData : [],
     },
     methods: {
-      getMonthYear : function(){
-        var months = {
-          1 : 'January',
-          2 : 'February',
-          3 : 'March',
-          4 : 'April',
-          5 : 'May',
-          6 : 'June',
-          7 : 'July',
-          8 : 'August',
-          9 : 'September',
-          10 : 'October',
-          11 : 'November',
-          12 : 'December',
+      setElChartUnit: function (unit) {
+        this.elChartUnit = unit;
+
+        if (unit === 'week') {
+          this.elChartUrl = '/api/ElWeekSummary';
+        } else {
+          this.elChartUrl = '/api/ElMonthSummary';
         }
-        var today = new Date();
-        var mm = today.getMonth();
-        var yyyy = today.getFullYear();
-        return [months[mm], yyyy];
+
+        this.elChartKey++;
+        this.$nextTick(function () {
+          this.generateChart('el-chart');
+        });
       },
-      getWeek : function(){
-        let now = new Date();
-        let onejan = new Date(now.getFullYear(), 0, 1);
-        week = Math.ceil( (((now - onejan) / 86400000) + onejan.getDay() + 1) / 7 );
-        return week;
+      formatData: function (data) {
+        results = [];
+        for (var val in data) {
+          results.push({
+            t: data[val].date,
+            y: data[val].el
+          });
+        }
+        return results;
       },
       generateLdChart: function (id) {
         var element = '#' + id;
@@ -105,7 +97,7 @@
         var title = c.data('title');
         //ajax call
         $.get(c.data('url')).done(function(response){
-          var data = response.data;
+          var data = response.results;
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
@@ -116,30 +108,26 @@
             });
           });
       },
-      generateChart: function(id){
+      generateChart: function (id) {
         var element = '#' + id;
         var c = $(element);
+        var obj = this;
+
         var title = c.data('title');
-        $.get(c.data('url')).done(function(response){
-          //var data = response.data;
+
+        $.get(obj.elChartUrl, function(response){
+          var d = obj.formatData(response.results);
           var data = {
             datasets: [{
               label: 'Extract Loss',
               backgroundColor: 'rgb(0,10,255, 0.5)',
               borderColor: 'rgb(0,10,255)',
               borderWidth: 0.5,
-              data: [{
-                t: '2020-09-04',
-                y: 0.5
-              },{
-                t: '2020-10-05',
-                y: 0.8
-              },{
-                t: '2020-10-06',
-                y: 0.1
-              }]
+              data: d
             }]
           }
+          console.log(data);
+          console.log("url: " + obj.elChartUrl);
 
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
@@ -153,14 +141,18 @@
                 responsive: true,
                 scales: {
                   xAxes: [{
+                    ticks: {
+                      source: 'data'
+                    },
                     type: 'time',
                     distribution: 'series',
                     time: {
                       displayFormats: {
-                        'week': 'W'
+                        'week': 'W',
+                        'month': 'MMM'
                       },
                       isoWeekday: true,
-                      unit: 'week',
+                      unit: obj.elChartUnit,
                     }
                   }]
                 }
