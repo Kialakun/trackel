@@ -21,21 +21,25 @@ class ElByProductWeekSummary(serializers.Serializer):
         return instance['week']
 
     def get_date(self, instance):
-        return instance['date']
+        w = instance['week']
+        q = ExtractLossData.objects.filter(date__week=w).order_by('-date')[0]
+        return q.date
 
     def get_el(self, instance):
         return instance['el']
 
 class ElByProductMonthSummary(serializers.Serializer):
-    #date = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
     month = serializers.SerializerMethodField()
     el = serializers.SerializerMethodField()
 
     def get_month(self, instance):
         return instance['month']
 
-    #def get_date(self, instance):
-    #    return instance['date']
+    def get_date(self, instance):
+        m = instance['month']
+        q = ExtractLossData.objects.filter(date__month=m).order_by('-date')[0]
+        return q.date
 
     def get_el(self, instance):
         return instance['el']
