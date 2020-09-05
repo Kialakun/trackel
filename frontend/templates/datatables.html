@@ -12,38 +12,8 @@
       <trackel-datatable-btngroup></trackel-datatable-btngroup>
       <trackel-datatable :key="tableKey"></trackel-datatable>
   </div>
-  {% comment %}
-          Displaying Forms in a Modal
-  {% endcomment %}
-
-  <div class="modal fade" id="addModal">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header bg-success">
-          <span>
-            <h4 class="modal-title text-white">Add New {{page_title}} Record</h4>
-          </span>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            <span class="sr-only">Close</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form class="form" method="post">
-            <div class="container">
-              <fieldset class="form-group">
-                {% csrf_token %}
-                {% render_form form template_pack='drfformbootstrap4/horizontal' %}
-              </fieldset>
-            </div>
-            <button v-on:click="sendForm" type="submit" class="btn btn-sm btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
-          </form>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-
+  <div id="formUrl" data-url="{% url url %}"></div>
+  <trackel-modal-form :key="modalFormKey"></trackel-modal-form>
 </div>
 {% endblock content %}
 
@@ -73,7 +43,62 @@
   </table>
 </template>
 
+{% comment %}
+        Displaying Forms in a Modal
+{% endcomment %}
+<template id="modalForm">
+  <div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-success">
+          <span>
+            <h4 class="modal-title text-white">Add New {{page_title}} Record</h4>
+          </span>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="form" method="post">
+            <div class="container">
+              <fieldset class="form-group">
+                {% csrf_token %}
+                {% render_form form template_pack='drfformbootstrap4/horizontal' %}
+              </fieldset>
+            </div>
+            <button v-on:click="sendForm" type="button" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</template>
+
 <script type="text/javascript">
+  Vue.component('trackel-modal-form', {
+    delimiters: ["[[", "]]"],
+    methods: {
+      sendForm: function () {
+        var form = $('form').serializeArray();
+        var url = $('#formUrl').data('url');
+
+        var data = {};
+        for (var name in form) {
+          data[form[name]['name']] = form[name]['value'];
+        }
+        $.post(url, data, function (data, status) {
+          alert("Done: " + data + " status: " + status);
+        }).fail(function (xhr, status, error) {
+          alert("Fail: " + error + " status: " + status + " xhr: " + xhr);
+          console.log(xhr.responseJSON);
+        });
+        console.log(data);
+      },
+    },
+    template: '#modalForm'
+  });
 
   Vue.component('trackel-datatable-btngroup',{
     delimiters: ["[[", "]]"],
@@ -140,6 +165,7 @@
     el: '#app',
     data : {
       tableKey : 0,
+      modalFormKey: 0,
     },
     mounted : function(){
       this.$nextTick(function(){
@@ -149,14 +175,6 @@
       });
     },
     methods: {
-      sendForm: function () {
-        var form = $('form').serializeArray();
-        var data = {};
-        for (var name in form) {
-          data[name] = form[name];
-        }
-        console.log(data);
-      },
     }
   });
 
