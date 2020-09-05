@@ -13,12 +13,12 @@ from trackel.products.models import Product
 # Create your views here.
 class ElByProductMonthSummary(generics.ListAPIView):
     serializer_class = ElByProductMonthSummary
-    queryset = ExtractLossData.objects.values('month').annotate(el=Sum('extract_loss_packaging'))
+    queryset = ExtractLossData.objects.values('month').annotate(Count('extract_loss_packaging'))
     permission_classes = [permissions.IsAuthenticated, ]
 
 class ElByProductWeekSummary(generics.ListAPIView):
     serializer_class = ElByProductWeekSummary
-    queryset = ExtractLossData.objects.values('week').annotate(el=Sum('extract_loss_packaging'))
+    queryset = ExtractLossData.objects.values('week').annotate(Count('week'))
     permission_classes = [permissions.IsAuthenticated, ]
 
 class ExtractLossDataViewSet(viewsets.ModelViewSet):
@@ -36,7 +36,7 @@ class ExtractLossDataExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet)
     file_name = 'extractlossdata.xlsx'
 
 def test_view(request):
-    queryset = ExtractLossData.objects.all().values('month').annotate(el=Sum('extract_loss_packaging'))
+    queryset = ExtractLossData.objects.values('month').annotate(Count('month'))
     data = {
         'q': list(queryset)
     }
