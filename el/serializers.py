@@ -13,13 +13,12 @@ class ExtractLossDataSerializer(serializers.ModelSerializer):
         model = ExtractLossData
         fields = '__all__'
 
-class ElByProductMonthSummary(serializers.Serializer):
-    product = serializers.SerializerMethodField()
-    el = serializer.SerializerMethodField()
+class ElByProductWeekSummary(serializers.Serializer):
+    week = serializers.SerializerMethodField()
+    el = serializers.SerializerMethodField()
 
-    def get_product(self, instance):
-        return instance.__str__()
+    def get_week(self, instance):
+        return instance['week']
 
     def get_el(self, instance):
-        q = ExtractLossData.objects.filter(product__id=instance.id)
-        return q
+        return instance['el']

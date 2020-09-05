@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% load trackel_tags %}
-
+{% load rest_framework %}
 {% comment %}
         For Showing datatables and triggering update forms
 {% endcomment %}
@@ -13,7 +12,37 @@
       <trackel-datatable-btngroup></trackel-datatable-btngroup>
       <trackel-datatable :key="tableKey"></trackel-datatable>
   </div>
-  {% render_trackel_form %}
+  {% comment %}
+          Displaying Forms in a Modal
+  {% endcomment %}
+
+  <div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-success">
+          <span>
+            <h4 class="modal-title text-white">Add New {{page_title}} Record</h4>
+          </span>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="form" method="post">
+            <div class="container">
+              <fieldset class="form-group">
+                {% csrf_token %}
+                {% render_form form template_pack='drfformbootstrap4/horizontal' %}
+              </fieldset>
+            </div>
+            <button v-on:click="sendForm" type="submit" class="btn btn-sm btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
 </div>
 {% endblock content %}
@@ -45,6 +74,7 @@
 </template>
 
 <script type="text/javascript">
+
   Vue.component('trackel-datatable-btngroup',{
     delimiters: ["[[", "]]"],
     data: function(){
@@ -117,6 +147,16 @@
           var table = $('#tt').DataTable();
         });
       });
+    },
+    methods: {
+      sendForm: function () {
+        var form = $('form').serializeArray();
+        var data = {};
+        for (var name in form) {
+          data[name] = form[name];
+        }
+        console.log(data);
+      },
     }
   });
 

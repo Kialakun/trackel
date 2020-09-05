@@ -3,13 +3,18 @@ import calendar
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Sum
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework import permissions
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
-from .serializers import ExtractLossDataSerializer
+from .serializers import ExtractLossDataSerializer, ElByProductWeekSummary
 from .models import ExtractLossData
+from trackel.products.models import Product
 # Create your views here.
+class ElByProductWeekSummary(generics.ListAPIView):
+    serializer_class = ElByProductWeekSummary
+    queryset = ExtractLossData.objects.values('week').annotate(el=Sum('extract_loss_packaging'))
+    permission_classes = [permissions.IsAuthenticated, ]
 
 class ExtractLossDataViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
@@ -63,22 +68,6 @@ def monthly_summary_view(request):
 
 def weekly_summary_view(request):
     """API for dashboard charts"""
-    def get_week_numbers(month, year):
-        end_day = calendar.monthrange(year, month)[1] # get last day of month
-        init_week = datetime.date(year, month, 1).isocalendar()[1]
-        end_week = datetime.date(year, month, end_day).isocalendar()[1]
-        return list(range(init_week, end_week + 1))
-
-    today = datetime.date.today()
-    m = today.month
-    y = today.year
-
-    weeks = get_week_numbers(m, y)
-
-    summary = []
-    for week in weeks:
-        q = ExtractLossData.objects.filter(date__week=week).aggregate(total=Sum('extract_loss_packaging'))
-        summary.append({week: q['total'] if q['total'] else 0})
 
     data = {
         "data" : summary,

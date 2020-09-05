@@ -44,7 +44,7 @@ class ExtractLossData(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        return "EL-" + str(self.id) + " | W" + str(self.week) + " | " + str(self.date) + " | " + str(self.shift)
+        return "EL-" + str(self.id) + " | W" + str(self.week) + " | " + str(self.date)
 
     def __unicode__(self):
         pass
