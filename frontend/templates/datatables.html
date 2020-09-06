@@ -9,10 +9,10 @@
 
 <div id="app">
   <div class="table-responsive">
+    <div :key="tableKey">
       <trackel-datatable-btngroup></trackel-datatable-btngroup>
-      <div :key="tableKey">
-        <trackel-datatable ref="tableRef"></trackel-datatable>
-      </div>
+      <trackel-datatable ref="tableRef"></trackel-datatable>
+    </div>
   </div>
   <div id="formUrl" data-url="{% url url %}"></div>
   <trackel-modal-form :key="modalFormKey"></trackel-modal-form>

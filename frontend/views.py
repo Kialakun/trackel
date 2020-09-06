@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from trackel.el.serializers import ExtractLossDataSerializer
 from trackel.el.models import ExtractLossData
 from trackel.products.serializers import ProductSerializer
@@ -7,6 +8,7 @@ from trackel.shifts.serializers import ShiftSerializer
 from trackel.supervisors.serializers import SupervisorSerializer
 from trackel.rejects.serializers import LossDeploymentSerializer
 # Create your views here.
+@login_required
 def lossdeployment_view(request):
     """Django view products_view"""
     context = {
@@ -17,6 +19,7 @@ def lossdeployment_view(request):
     }
     return render(request, 'datatables.html', context=context)
 
+@login_required
 def products_view(request):
     """Django view products_view"""
     context = {
@@ -27,6 +30,7 @@ def products_view(request):
     }
     return render(request, 'datatables.html', context=context)
 
+@login_required
 def dashboard_view(request):
     """Django view dashboard"""
     context = {
@@ -36,6 +40,7 @@ def dashboard_view(request):
     }
     return render(request, 'el_dashboard.html', context=context)
 
+@login_required
 def el_view(request):
     """Django view el_view"""
     context = {
@@ -46,6 +51,7 @@ def el_view(request):
     }
     return render(request, 'datatables.html', context=context)
 
+@login_required
 def supervisors_view(request):
     """Django view supervisors_views"""
     context = {
@@ -56,6 +62,7 @@ def supervisors_view(request):
     }
     return render(request, 'datatables.html', context=context)
 
+@login_required
 def shifts_view(request):
     """Django view shifts_view"""
     context = {
