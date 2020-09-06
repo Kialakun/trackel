@@ -128,6 +128,7 @@
       refreshTable : function () {
         app.tableKey += 1;
         app.$refs.tableRef.getData();
+        
         app.$nextTick(function () {
           $(document).ready(function () {
             $('#tt').DataTable();

@@ -7,18 +7,28 @@
 {% endcomment %}
 <div id="app">
   <div class="row">
-    <div class="col-g-12">
+    <div class="col-lg-12">
       <div class="container-fluid">
         <div v-if="elActive">
-          {% comment %}
-                  Extract Loss Chart
-          {% endcomment %}
-
-          <h6 :key="elChartKey">[[ elChartTitle ]]</h6>
-          <canvas :key="elChartKey" v-on:click="chartClickHandler" id="el-chart" data-title="Extract Loss" height="300" width="600"></canvas>
-          <div class="btn-group" role="group" aria-label="button group">
-            <button v-on:click="setElChartUnit('week')" type="button" class="btn btn-sm btn-outline-secondary">Weeks</button>
-            <button v-on:click="setElChartUnit('month')" type="button" class="btn btn-sm btn-outline-secondary">Months</button>
+          <div class="container">
+            {% comment %}
+                    Extract Loss Chart
+            {% endcomment %}
+            <div class="row">
+              <h6 :key="elChartKey">[[ elChartTitle ]]</h6>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <canvas :key="elChartKey" v-on:click="chartClickHandler" id="el-chart" data-title="Extract Loss"></canvas>
+              </div>
+            </div>
+            <div class="row">
+              <div class="btn-group mt-3" role="group" aria-label="button group">
+                <button v-on:click="setElChartUnit('week')" type="button" class="btn btn-sm btn-outline-secondary">Weeks</button>
+                <button v-on:click="setElChartUnit('month')" type="button" class="btn btn-sm btn-outline-secondary">Months</button>
+                <button v-on:click="elRefreshButton" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
+              </div>
+            </div>
           </div>
         </div>
         <div v-if="ldActive">
@@ -26,12 +36,24 @@
             {% comment %}
                     Loss Deployment Chart
             {% endcomment %}
-            <h6>[[ ldChartTitle ]]</h6>
-            <canvas :key="ldChartKey" id="ld-chart" data-url="{% url 'RejectsMonthSummary' %}" data-title="Loss Deployment" height="300" width="600"></canvas>
-            <div class="btn-group" role="group" aria-label="button group ld">
-              <button type="button" class="btn btn-sm btn-outline-secondary">W[[ week ]]</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary">[[  month ]]</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary">[[ year ]]</button>
+            <div class="row">
+              <h6 :key="ldChartTitleKey">[[ ldChartTitle ]]</h6>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h6 class="text-secondary" id="canChartTitle">Can Line</h6>
+                <canvas :key="ldChartKey" id="ld-chart-can"></canvas>
+              </div>
+              <div class="col-lg-6">
+                <h6 class="text-secondary" id="canChartTitle">Bottle Line</h6>
+                <canvas :key="ldChartKey" id="ld-chart-bottle"></canvas>
+              </div>
+            </div>
+            <div class="row">
+              <div class="btn-group mt-3" role="group" aria-label="button group">
+                <button v-on:click="backButton" type="button" class="btn btn-sm btn-outline-secondary">Back</button>
+                <button v-on:click="ldRefreshButton" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
+              </div>
             </div>
           </div>
         </div>
@@ -60,44 +82,101 @@
       this.$nextTick(function(){
         var obj = this;
         this.generateChart('el-chart');
-        this.generateLdChart('ld-chart');
       });
     },
     data: {
       elActive: true,
       ldActive: false,
       ldChartTitle: 'Loss Deployment',
-      ldChartUrl: '/api/rejectsmonthsummary?line=CAN',
+      ldChartUrl: '/api/rejectsmonthsummary?line=',
       elChartTitle: 'Extract Loss By Month',
       elChartUrl: '/api/ElMonthSummary',
       elChartUnit: 'month',
       elChartKey: 0,
       ldChartKey: 0,
+      ldChartTitleKey: 0,
       month : 0,
-      year : 0,
       week : 0,
-      elChart: [],
+      elChart: 0,
+      ldChartCan: 0,
+      ldChartBottle: 0,
+      ldDate: 0,
     },
     methods: {
+      elRefreshButton: function () {
+        //destroy el chart
+        this.elChart.destroy();
+        this.generateChart('el-chart');
+      },
+      ldRefreshButton: function () {
+        //destroy both charts in order to rebuild them
+        this.ldChartCan.destroy();
+        this.ldChartBottle.destroy();
+        //params = date for db filtering
+        var params = '&d=' + this.ldDate;
+        //ergenerate the charts
+        this.generateLdChart('ld-chart-can', params);
+        this.generateLdChart('ld-chart-bottle', params);
+      },
+      backButton: function () {
+        //destroy ld charts
+        this.ldChartCan.destroy();
+        this.ldChartBottle.destroy();
+        //set active states for charts el or ld
+        this.elActive = true;
+        this.ldActive = false;
+        //refresg el chart by incrementing key
+        this.elChartKey++;
+        //generate chart
+        this.generateChart('el-chart');
+      },
       chartClickHandler: function (evt) {
+        //define getWeek function
+        Date.prototype.getWeek = function() {
+            var dt = new Date(this.getFullYear(),0,1);
+            return Math.ceil((((this - dt) / 86400000) + dt.getDay()+1)/7) - 1;
+        };
+        //get the chart object and the element clicked
         var chart = this.elChart;
         var first_point = chart.getElementAtEvent(evt)[0];
-
+        //get value of the element clicked
         if (first_point) {
-          var label = chart.data.labels[first_point._index];
            var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
+
+           //change title
+           const date = new Date(value.t);
+           if (this.elChartUnit == 'month') {
+             const month = date.toLocaleString('default', { month: 'long' });
+             this.ldChartTitle = 'Loss Deployment For ' + month;
+             this.ldChartTitleKey++;
+             this.ldChartUrl = '/api/rejectsmonthsummary?line=';
+           } else if (this.elChartUnit == 'week') {
+             const week = date.getWeek();
+             this.ldChartTitle = 'Loss Deployment For Week ' + week;
+             this.ldChartTitleKey++;
+             this.ldChartUrl = '/api/rejectsweeksummary?line=';
+           }
+           //set date so it can be used in refresh button
+           this.ldDate = value.t;
+           //set active states for el or ld
            this.elActive = false;
-           
            this.ldActive = true;
            this.ldChartKey++;
-           this.generateLdChart('ld-chart');
 
+           var params = '&d=' + value.t;
+
+           //destroy elChart
+           chart.destroy();
+
+           this.generateLdChart('ld-chart-can', params);
+           this.generateLdChart('ld-chart-bottle', params);
            console.log(value);
         }
       },
       setElChartUnit: function (unit) {
         this.elChartUnit = unit;
-
+        // set the units either month or week with
+        // corresponding urls
         if (unit === 'week') {
           this.elChartTitle = 'Extract Loss By Week';
           this.elChartUrl = '/api/ElWeekSummary';
@@ -105,13 +184,14 @@
           this.elChartTitle = 'Extract Loss By Month';
           this.elChartUrl = '/api/ElMonthSummary';
         }
-
+        //resfresh and generate chart el
         this.elChartKey++;
         this.$nextTick(function () {
           this.generateChart('el-chart');
         });
       },
       formatData: function (data) {
+        //data formatting for date and time series display
         results = [];
         for (var val in data) {
           results.push({
@@ -121,11 +201,18 @@
         }
         return results;
       },
-      generateLdChart: function (id) {
-        var element = '#' + id;
-        var c = $(element);
-        var title = c.data('title');
-        var url = this.ldChartUrl;
+      generateLdChart: function (id, params) {
+        //set obj to access again from jquery
+        var obj = this;
+        //check the current state, either week or month
+        if (id === 'ld-chart-can') {
+          var type = 'CAN';
+        } else if (id === 'ld-chart-bottle') {
+          var type = 'BOTTLE';
+        }
+        //create url
+        var url = this.ldChartUrl + type + params;
+
         //ajax call
         $.get(url, function(response){
           var res = response;
@@ -134,20 +221,25 @@
           for (var item in res) {
             labels.push(res[item]['product'])
           }
-
+          //datasets for chartjs
           var datasets = [{
             label: 'Heuft 1 Rejects',
+            backgroundColor: 'rgb(0, 10, 255, 0.5)',
+            borderColor: 'rgb(0, 10, 255)',
+            borderWidth: 0.5,
             data: []
           },{
             label: 'Heuft 2 Rejects',
+            backgroundColor: 'rgb(200, 200, 0, 0.5)',
+            borderColor: 'rgb(200, 200, 0)',
+            borderWidth: 0.5,
             data: []
           }];
-
+          // set the data for datasets
           for (var item in res) {
             datasets[0].data.push(res[item].heuft_1_rejects_total);
             datasets[1].data.push(res[item].heuft_2_rejects_total);
           }
-          console.log(datasets);
 
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
@@ -159,23 +251,29 @@
                 labels: labels,
                 datasets: datasets
               },
+              options: {
+                responsive: true,
+                aspectRatio: 2,
+              }
             });
-          });
+            //check which type and save charts, in order to destroy later
+          if (type === 'CAN') {
+            obj.ldChartCan = chart;
+          } else if (type === 'BOTTLE') {
+            obj.ldChartBottle = chart;
+          }
+        });
       },
       generateChart: function (id) {
-        var element = '#' + id;
-        var c = $(element);
         var obj = this;
-
-        var title = c.data('title');
-
+        // ajax call
         $.get(obj.elChartUrl, function(response){
           var d = obj.formatData(response.results);
           var data = {
             datasets: [{
               label: 'Extract Loss %',
-              backgroundColor: 'rgb(0,10,255, 0.5)',
-              borderColor: 'rgb(0,10,255)',
+              backgroundColor: 'rgb(10, 200, 10, 0.5)',
+              borderColor: 'rgb(10, 200, 10)',
               borderWidth: 0.5,
               data: d
             }]
@@ -190,6 +288,7 @@
               // Configuration options go here
               options: {
                 responsive: true,
+                aspectRatio: 3,
                 scales: {
                   xAxes: [{
                     ticks: {

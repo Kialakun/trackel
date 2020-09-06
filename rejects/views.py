@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from trackel.products.models import Product
-from .serializers import LossDeploymentSerializer, LossDeploymentMonthSummarySerializer
+from .serializers import LossDeploymentSerializer, LossDeploymentMonthSummarySerializer, LossDeploymentWeekSummarySerializer
 from .models import LossDeployment
 # Create your views here.
 class LossDeploymentMonthSummaryListAPIView(generics.ListAPIView):
@@ -24,56 +24,45 @@ class LossDeploymentMonthSummaryListAPIView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         line = request.query_params.get('line')
+        d = request.query_params.get('d', None)
+        try:
+            date = datetime.datetime.strptime(d, '%Y-%m-%d')
+            m = date.month
+        except:
+            raise Http404("No date specified.")
         try:
             q = self.get_queryset()
-            queryset = q.filter(line=line)
+            queryset = q.filter(line=line).filter(m=m)
         except:
             raise Http404("Line does not exist.")
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+class LossDeploymentWeekSummaryListAPIView(generics.ListAPIView):
+    serializer_class = LossDeploymentWeekSummarySerializer
+    queryset = LossDeployment.objects. \
+        annotate(w=ExtractWeek('extract_loss_record__date')). \
+        values('w', 'product', 'line'). \
+        annotate(mcount=Count('w'), pcount=Count('product'))
+    permission_classes = [permissions.IsAuthenticated, ]
 
-@login_required
-def month_summary_view(request):
-    """summary for the month"""
-    today = datetime.date.today()
-    month = today.month
+    def list(self, request, *args, **kwargs):
+        line = request.query_params.get('line')
+        d = request.query_params.get('d', None)
+        try:
+            date = datetime.datetime.strptime(d, '%Y-%m-%d')
+            w = date.isocalendar()[1]
+        except:
+            raise Http404("No date specified.")
+        try:
+            q = self.get_queryset()
+            queryset = q.filter(line=line).filter(w=w)
+        except:
+            raise Http404("Line does not exist.")
 
-    products = Product.objects.all()
-
-    labels = []
-    datasets = [
-        {
-        'label':'Heuft 1 Rejects',
-        'data' : []
-        },
-        {
-        'label': 'Heuft 2 Rejects',
-        'data': []
-        }
-    ]
-
-    for product in products:
-        q = LossDeployment.objects.filter(extract_loss_record__date__month=month
-            ).annotate(heuft_1_rejects_total=Sum('heuft_1_rejects')
-            ).annotate(heuft_2_rejects_total=Sum('heuft_2_rejects'))
-
-        labels.append(str(product))
-        if q:
-            datasets[0]['data'].append(float(q[0].heuft_1_rejects_total) if q[0].heuft_1_rejects_total else 0)
-            datasets[1]['data'].append(float(q[0].heuft_2_rejects_total) if q[0].heuft_2_rejects_total else 0)
-        else:
-            datasets[0]['data'].append(0)
-            datasets[1]['data'].append(0)
-
-    data = {
-        'data' : {
-            'labels': labels,
-            'datasets' : datasets
-        }
-    }
-    return JsonResponse(data=data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class LossDeploymentViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
