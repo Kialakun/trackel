@@ -5,7 +5,7 @@ from . import views
 # app_name = 'frontend'
 
 urlpatterns = [
-    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('', views.dashboard_view, name='dashboard'),
     path('ExtractLoss/', views.el_view, name='el'),
     path('Supervisors/', views.supervisors_view, name='Supervisors'),
     path('Products/', views.products_view, name='Products'),
