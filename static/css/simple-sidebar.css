@@ -7,6 +7,12 @@ body {
   font-size: 0.7rem !important;
   overflow-x: hidden;
 }
+
+.chart {
+  position: relative;
+  height: 65vh;
+}
+
 #sidebar-wrapper {
   min-height: 100vh;
   margin-left: -15rem;

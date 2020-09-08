@@ -11,9 +11,47 @@ from rest_framework.response import Response
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from trackel.products.models import Product
-from .serializers import LossDeploymentSerializer, LossDeploymentMonthSummarySerializer, LossDeploymentWeekSummarySerializer
+from .serializers import LdMonthSummaryByHeuftSerializer, LossDeploymentSerializer, LossDeploymentMonthSummarySerializer, LossDeploymentWeekSummarySerializer
 from .models import LossDeployment
 # Create your views here.
+class LdMonthSummaryByHeuftListAPIView(generics.ListAPIView):
+    serializer_class = LdMonthSummaryByHeuftSerializer
+    queryset = LossDeployment.objects. \
+        annotate(m=ExtractMonth('extract_loss_record__date')). \
+        values('m', 'product', 'line'). \
+        annotate(
+            mcount=Count('m'),
+            pcount=Count('product'),
+            )
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def list(self, request, *args, **kwargs):
+        heuft = request.query_params.get('heuft')
+        product = request.query_params.get('product')
+        d = request.query_params.get('d', None)
+        try:
+            date = datetime.datetime.strptime(d, '%Y-%m-%d')
+            m = date.month
+        except:
+            raise Http404("No date specified.")
+        try:
+            q = self.get_queryset()
+            queryset = q.filter(heuft_number=heuft).filter(m=m). \
+                filter(product=product). \
+                annotate(
+                    canted_closure_total=Sum('canted_closure'),
+                    leaking_pressure_total=Sum('leaking_pressure'),
+                    low_fill_total=Sum('low_fill'),
+                    uncrowned_total=Sum('uncrowned'),
+                    total_losses=Sum('total_loss')
+                    )
+        except:
+            raise Http404("Line does not exist.")
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class LossDeploymentMonthSummaryListAPIView(generics.ListAPIView):
     serializer_class = LossDeploymentMonthSummarySerializer
     queryset = LossDeployment.objects. \

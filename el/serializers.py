@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from trackel.products.models import Product
 from trackel.shifts.models import Shift
 from trackel.utils.custom_serializer_fields import MonthField, ShiftField
@@ -48,5 +48,5 @@ class ElByProductMonthSummary(serializers.Serializer):
 
     def get_el(self, instance):
         m = instance['m']
-        q = ExtractLossData.objects.filter(date__month=m).aggregate(total=Sum('extract_loss_packaging'))
+        q = ExtractLossData.objects.filter(date__month=m).aggregate(total=Avg('extract_loss_packaging'))
         return q['total']
