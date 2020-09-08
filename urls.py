@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from trackel.el.views import ExtractLossDataViewSet, ExtractLossDataExportViewSet
 from trackel.products.views import ProductViewSet, ProductExportViewSet
 from trackel.shifts.views import ShiftViewSet, ShiftExportViewSet
-from trackel.rejects.views import LossDeploymentViewSet, LossDeploymentExportViewSet
+from trackel.rejects.views import Heuft1ViewSet, Heuft2ViewSet
 from trackel.supervisors.views import SupervisorViewSet, SupervisorExportViewSet
 
 router = DefaultRouter()
@@ -34,8 +34,8 @@ router.register(r'Shifts', ShiftViewSet)
 router.register(r'ShiftsExport', ShiftExportViewSet, basename='shiftsexport')
 router.register(r'Supervisors', SupervisorViewSet)
 router.register(r'SupervisorsExport', SupervisorExportViewSet, basename='supervisorsexport')
-router.register(r'Rejects', LossDeploymentViewSet)
-router.register(r'RejectsExport', LossDeploymentExportViewSet, basename='rejectsexport')
+router.register(r'Heuft1', Heuft1ViewSet)
+router.register(r'Heuft2', Heuft2ViewSet)
 
 urlpatterns = [
     path('API/', include(router.urls)),

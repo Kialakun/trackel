@@ -10,5 +10,6 @@ urlpatterns = [
     path('Supervisors/', views.supervisors_view, name='Supervisors'),
     path('Products/', views.products_view, name='Products'),
     path('Shifts/', views.shifts_view, name='Shifts'),
-    path('LossDeployment/', views.lossdeployment_view, name='LossDeployment')
+    path('Heuft1/', views.heuft1_view, name='Heuft1'),
+    path('Heuft2/', views.heuft2_view, name='Heuft2')
 ]

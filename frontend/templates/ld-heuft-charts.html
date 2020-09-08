@@ -12,6 +12,15 @@
 <script type="text/javascript">
   Vue.component('heuft-charts', {
     delimiters: ["[[", "]]"],
+    created: function () {
+      this.setChart(this.heuft1);
+      this.setChart(this.heuft2);
+
+      this.$nextTick(function () {
+        this.generateChart(this.heuft1);
+        this.generateChart(this.heuft2);
+      });
+    },
     data: function () {
       return {
         data: [],
@@ -20,7 +29,10 @@
           url: '',
           labels: [],
           data: [],
-          options: {}
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+          }
 
         },
         heuft2: {
@@ -28,7 +40,10 @@
           url: '',
           labels: [],
           data: [],
-          options: {}
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+          }
         }
       }
     },

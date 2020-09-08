@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load frontend_tags %}
 
 {% block content %}
 {% comment %}
@@ -47,7 +48,7 @@
             <div class="row">
               <div class="col-lg-6">
                 <h6 class="text-secondary" id="canChartTitle">Can Line</h6>
-                <canvas :key="ldChartKey" id="ld-chart-can"></canvas>
+                <canvas :key="ldChartKey" v-on:click="ldChartCanClickHandler" id="ld-chart-can"></canvas>
               </div>
               <div class="col-lg-6">
                 <h6 class="text-secondary" id="canChartTitle">Bottle Line</h6>
@@ -62,7 +63,9 @@
             </div>
           </div>
         </div>
-
+        <div v-if="heuftActive">
+          <heuft-charts ref="heuftcharts"></heuft-charts>
+        </div>
       </div>
     </div>
   </div>
@@ -78,6 +81,7 @@
 {% comment %}
         Vue Instance
 {% endcomment %}
+{% load_heuft_charts %}
 <script type="text/javascript">
 
 
@@ -93,6 +97,7 @@
     data: {
       elActive: true,
       ldActive: false,
+      heuftActive: false,
       ldChartTitle: 'Loss Deployment',
       ldChartUrl: '/api/rejectsmonthsummary?line=',
       elChartTitle: 'Extract Loss By Month',
@@ -136,6 +141,23 @@
         this.elChartKey++;
         //generate chart
         this.generateChart('el-chart');
+      },
+      ldChartCanClickHandler: function (evt) {
+        var chart = this.ldChartCan;
+        var first_point = chart.getElementAtEvent(evt)[0];
+        //get value of the element clicked
+        if (first_point) {
+           var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
+         }
+         console.log(value);
+        //set urls before activating
+        this.$refs.heuftcharts.heuft1.url = '/api/rejectsmonthsummarybyheuft?heuft=1';
+        this.$refs.heuftcharts.heuft2.url = '';
+
+        //activate chart
+        this.ldActive = false;
+        this.heuftActive = true;
+
       },
       chartClickHandler: function (evt) {
         //define getWeek function

@@ -11,107 +11,61 @@ from rest_framework.response import Response
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from trackel.products.models import Product
-from .serializers import LdMonthSummaryByHeuftSerializer, LossDeploymentSerializer, LossDeploymentMonthSummarySerializer, LossDeploymentWeekSummarySerializer
-from .models import LossDeployment
+from .serializers import Heuft1Serializer, Heuft2Serializer
+from .models import Heuft1, Heuft2
 # Create your views here.
-class LdMonthSummaryByHeuftListAPIView(generics.ListAPIView):
-    serializer_class = LdMonthSummaryByHeuftSerializer
-    queryset = LossDeployment.objects. \
-        annotate(m=ExtractMonth('extract_loss_record__date')). \
-        values('m', 'product', 'line'). \
-        annotate(
-            mcount=Count('m'),
-            pcount=Count('product'),
-            )
+class Heuft1Summary(generics.ListAPIView):
+    """api for viewing summarys"""
+    serializer_class = Heuft1Serializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def list(self, request, *args, **kwargs):
-        heuft = request.query_params.get('heuft')
-        product = request.query_params.get('product')
-        d = request.query_params.get('d', None)
-        try:
-            date = datetime.datetime.strptime(d, '%Y-%m-%d')
-            m = date.month
-        except:
-            raise Http404("No date specified.")
-        try:
-            q = self.get_queryset()
-            queryset = q.filter(heuft_number=heuft).filter(m=m). \
-                filter(product=product). \
-                annotate(
-                    canted_closure_total=Sum('canted_closure'),
-                    leaking_pressure_total=Sum('leaking_pressure'),
-                    low_fill_total=Sum('low_fill'),
-                    uncrowned_total=Sum('uncrowned'),
-                    total_losses=Sum('total_loss')
-                    )
-        except:
-            raise Http404("Line does not exist.")
+        """overriding list"""
+        # check query params
+        # get date
+        date = request.query_params.get('date', None)
+        if date:
+            date = datetime.date(date)
+        # week summary or month summary
+        unit = request.query_params.get('unit', None)
+        # product
+        product = request.query_params.get('product', None)
+        # line
+        line = request.query_params.get('line', None)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        # get queryset
+        queryset = self.get_queryset()
 
+        # filter by month or week
+        if unit == 'w':
+            queryset = queryset.filter(date__week=date.isocalendar()[1])
+        elif unit == 'm':
+            queryset = queryset.filter(date___month=date.month)
 
-class LossDeploymentMonthSummaryListAPIView(generics.ListAPIView):
-    serializer_class = LossDeploymentMonthSummarySerializer
-    queryset = LossDeployment.objects. \
-        annotate(m=ExtractMonth('extract_loss_record__date')). \
-        values('m', 'product', 'line'). \
-        annotate(mcount=Count('m'), pcount=Count('product'))
+        # filter by line
+        if line:
+            queryset = queryset.filter(line=line)
+
+        # filter by product
+        if product:
+            queryset = queryset.filter(product__id=product)
+
+class Heuft2ViewSet(viewsets.ModelViewSet):
+    """Heuft 1 Model View Set"""
+    queryset = Heuft2.objects.all()
+    serializer_class = Heuft2Serializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def list(self, request, *args, **kwargs):
-        line = request.query_params.get('line')
-        d = request.query_params.get('d', None)
-        try:
-            date = datetime.datetime.strptime(d, '%Y-%m-%d')
-            m = date.month
-        except:
-            raise Http404("No date specified.")
-        try:
-            q = self.get_queryset()
-            queryset = q.filter(line=line).filter(m=m)
-        except:
-            raise Http404("Line does not exist.")
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-class LossDeploymentWeekSummaryListAPIView(generics.ListAPIView):
-    serializer_class = LossDeploymentWeekSummarySerializer
-    queryset = LossDeployment.objects. \
-        annotate(w=ExtractWeek('extract_loss_record__date')). \
-        values('w', 'product', 'line'). \
-        annotate(mcount=Count('w'), pcount=Count('product'))
+class Heuft1ViewSet(viewsets.ModelViewSet):
+    """Heuft 1 Model View Set"""
+    queryset = Heuft1.objects.all()
+    serializer_class = Heuft1Serializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def list(self, request, *args, **kwargs):
-        line = request.query_params.get('line')
-        d = request.query_params.get('d', None)
-        try:
-            date = datetime.datetime.strptime(d, '%Y-%m-%d')
-            w = date.isocalendar()[1]
-        except:
-            raise Http404("No date specified.")
-        try:
-            q = self.get_queryset()
-            queryset = q.filter(line=line).filter(w=w)
-        except:
-            raise Http404("Line does not exist.")
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-class LossDeploymentViewSet(viewsets.ModelViewSet):
-    """View set for Extract Loss Data"""
-    serializer_class = LossDeploymentSerializer
-    queryset = LossDeployment.objects.all()
-    permission_classes = [permissions.IsAuthenticated, ]
-
-class LossDeploymentExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
-    """View set for loss deployment exporting to .xlsx file"""
-    queryset = LossDeployment.objects.all()
-    serializer_class = LossDeploymentSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
-    renderer_classes = (XLSXRenderer,)
-    filename = 'lossdeployment.xlsx'
+# class Heuft1ExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
+#     """View set for loss deployment exporting to .xlsx file"""
+#     queryset = LossDeployment.objects.all()
+#     serializer_class = LossDeploymentSerializer
+#     permission_classes = [permissions.IsAuthenticated, ]
+#     renderer_classes = (XLSXRenderer,)
+#     filename = 'lossdeployment.xlsx'

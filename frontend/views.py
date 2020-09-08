@@ -6,16 +6,27 @@ from trackel.el.models import ExtractLossData
 from trackel.products.serializers import ProductSerializer
 from trackel.shifts.serializers import ShiftSerializer
 from trackel.supervisors.serializers import SupervisorSerializer
-from trackel.rejects.serializers import LossDeploymentSerializer
+from trackel.rejects.serializers import Heuft1Serializer, Heuft2Serializer
 # Create your views here.
 @login_required
-def lossdeployment_view(request):
+def heuft2_view(request):
     """Django view products_view"""
     context = {
-        "page_title" : "Loss Deployment",
-        "form" : LossDeploymentSerializer(),
-        "url" : "lossdeployment-list",
-        "export_url": "rejectsexport-list"
+        "page_title" : "Heuft 2",
+        "form" : Heuft2Serializer(),
+        "url" : "heuft2-list",
+        "export_url": "heuft2-list" # change
+    }
+    return render(request, 'datatables.html', context=context)
+
+@login_required
+def heuft1_view(request):
+    """Django view products_view"""
+    context = {
+        "page_title" : "Heuft 1",
+        "form" : Heuft1Serializer(),
+        "url" : "heuft1-list",
+        "export_url": "heuft1-list" # change
     }
     return render(request, 'datatables.html', context=context)
 

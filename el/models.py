@@ -13,6 +13,7 @@ class ExtractLossData(models.Model):
     date = models.DateField(default=datetime.date.today, verbose_name='Week End Date')
     bbt_volume = models.DecimalField(max_digits=4, decimal_places=2, verbose_name="BBT Volume", help_text="Enter the BBT volume.")
     packaged = models.IntegerField(blank=True, null=True, verbose_name='Packaged', help_text="Enter the volume packaged.")
+    og = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='OG', blank=True, null=True)
     extract_loss_packaging = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='EL PKG', blank=True, null=True)
 
     class Meta:
