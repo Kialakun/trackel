@@ -1,0 +1,67 @@
+<template id="heuftcharts">
+  <div class="row">
+    <div class="col-lg-6">
+      <canvas id="heuft_1_chart"></canvas>
+    </div>
+    <div class="col-lg-6">
+      <canvas id="heuft_2_chart"></canvas>
+    </div>
+  </div>
+</template>
+
+<script type="text/javascript">
+  Vue.component('heuft-charts', {
+    delimiters: ["[[", "]]"],
+    data: function () {
+      return {
+        data: [],
+        heuft1: {
+          el: '#heuft_1_chart',
+          url: '',
+          labels: [],
+          data: [],
+          options: {}
+
+        },
+        heuft2: {
+          el: '#heuft_2_chart',
+          url: '',
+          labels: [],
+          data: [],
+          options: {}
+        }
+      }
+    },
+    methods: {
+      setChart: function (chart) {
+
+        $.get(chart.url, function (response) {
+          var data = [];
+          for (var item in response) {
+            data.push(item.canted_closure);
+            data.push(item.leaking_pressure);
+            data.push(item.low_fill);
+            data.push(item.uncrowned);
+          }
+
+          //set data
+          chart.labels = ['Canted Closure', 'Leaking Pressure', 'Low Fill', 'Uncrowned']
+          chart.data = data;
+
+        });
+      },
+      generateChart: function (chart) {
+
+        var ctx = $(chart.el).get(0).getContext('2d');
+
+        var chart = new Chart(ctx, {
+          type: 'bar',
+          data: chart.data,
+          options: chart.options
+        });// end chart
+
+      }, // end method
+    },
+    template: '#heuftcharts'
+  });
+</script>
