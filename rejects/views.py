@@ -13,6 +13,7 @@ from drf_renderer_xlsx.renderers import XLSXRenderer
 from trackel.products.models import Product
 from .serializers import Heuft1Serializer, Heuft2Serializer
 from .models import Heuft1, Heuft2
+
 # Create your views here.
 class Heuft1Summary(generics.ListAPIView):
     """api for viewing summarys"""
@@ -20,12 +21,12 @@ class Heuft1Summary(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self, *args, **kwargs):
-        """overriding list"""
+        """overriding queryset"""
         # check query params
         # get date
         date = self.request.query_params.get('date', None)
         if date:
-            date = datetime.date(date)
+            date = datetime.datetime.strptime(date, '%Y-%m-%d')
         # week summary or month summary
         unit = self.request.query_params.get('unit', None)
         # product
