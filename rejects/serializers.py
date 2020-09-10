@@ -12,6 +12,7 @@ class Heuft1Serializer(serializers.ModelSerializer):
     class Meta:
         model = Heuft1
         fields = '__all__'
+        read_only_fields = ['total_loss']
 
 class Heuft2Serializer(serializers.ModelSerializer):
     """Heuft 2 Serializer"""
@@ -20,3 +21,4 @@ class Heuft2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Heuft2
         fields = '__all__'
+        read_only_fields = ['total_loss']
