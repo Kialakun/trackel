@@ -19,23 +19,21 @@ class Heuft1Summary(generics.ListAPIView):
     serializer_class = Heuft1Serializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self, *args, **kwargs):
         """overriding list"""
         # check query params
         # get date
-        date = request.query_params.get('date', None)
+        date = self.request.query_params.get('date', None)
         if date:
             date = datetime.date(date)
         # week summary or month summary
-        unit = request.query_params.get('unit', None)
+        unit = self.request.query_params.get('unit', None)
         # product
-        product = request.query_params.get('product', None)
+        product = self.request.query_params.get('product', None)
         # line
-        line = request.query_params.get('line', None)
+        line = self.request.query_params.get('line', None)
 
-        # get queryset
-        queryset = self.get_queryset()
-
+        queryset = Heuft1.objects.all()
         # filter by month or week
         if unit == 'w':
             queryset = queryset.filter(date__week=date.isocalendar()[1])
@@ -49,6 +47,7 @@ class Heuft1Summary(generics.ListAPIView):
         # filter by product
         if product:
             queryset = queryset.filter(product__id=product)
+        return queryset
 
 class Heuft2ViewSet(viewsets.ModelViewSet):
     """Heuft 1 Model View Set"""
