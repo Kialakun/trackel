@@ -39,7 +39,7 @@ class Heuft1Summary(generics.ListAPIView):
         if unit == 'w':
             queryset = queryset.filter(date__week=date.isocalendar()[1])
         elif unit == 'm':
-            queryset = queryset.filter(date___month=date.month)
+            queryset = queryset.filter(date__month=date.month)
 
         # filter by line
         if line:
@@ -52,7 +52,36 @@ class Heuft1Summary(generics.ListAPIView):
 
 class Heuft2ViewSet(viewsets.ModelViewSet):
     """Heuft 1 Model View Set"""
-    queryset = Heuft2.objects.all()
+    def get_queryset(self, *args, **kwargs):
+        """overriding queryset to include custom query params"""
+        queryset = Heuft2.objects.all()
+        # check query params
+        # get date
+        date = self.request.query_params.get('date', None)
+        if date:
+            date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        # week summary or month summary
+        unit = self.request.query_params.get('unit', None)
+        # product
+        product = self.request.query_params.get('product', None)
+        # line
+        line = self.request.query_params.get('line', None)
+
+        # filter by month or week
+        if unit == 'w':
+            queryset = queryset.filter(date__week=date.isocalendar()[1])
+        elif unit == 'm':
+            queryset = queryset.filter(date__month=date.month)
+
+        # filter by line
+        if line:
+            queryset = queryset.filter(line=line)
+
+        # filter by product
+        if product:
+            queryset = queryset.filter(product__id=product)
+        return queryset
+
     serializer_class = Heuft2Serializer
     permission_classes = [permissions.IsAuthenticated, ]
 
