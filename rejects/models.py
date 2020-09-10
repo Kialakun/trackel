@@ -44,8 +44,8 @@ class Heuft2(models.Model):
     total_loss = models.DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
-        verbose_name = 'LossDeployment'
-        verbose_name_plural = 'LossDeployments'
+        verbose_name = 'Heuft2'
+        verbose_name_plural = 'Heuft2s'
 
     def __str__(self):
         return str(self.id)
