@@ -51,9 +51,9 @@ class Heuft2(models.Model):
         return str(self.id)
 
 @receiver(pre_save, sender=Heuft2)
-def save_total_loss(sender, instance, **kwargs):
+def save_heuft1_total_loss(sender, instance, **kwargs):
     instance.total_loss = instance.canted_closure + instance.leaking_pressure + instance.low_fill + instance.uncrowned
 
 @receiver(pre_save, sender=Heuft1)
-def save_total_loss(sender, instance, **kwargs):
+def save_heuft2_total_loss(sender, instance, **kwargs):
     instance.total_loss = instance.filling_tube + instance.filling + instance.closure
