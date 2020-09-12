@@ -128,10 +128,12 @@
       refreshTable : function () {
         app.tableKey += 1;
         app.$refs.tableRef.getData();
-        
+
         app.$nextTick(function () {
           $(document).ready(function () {
-            $('#tt').DataTable();
+            $('#tt').DataTable({
+              order: [[1, 'asc']],
+            });
           });
         });
       },
