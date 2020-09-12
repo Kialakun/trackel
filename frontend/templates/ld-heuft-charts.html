@@ -12,21 +12,13 @@
 <script type="text/javascript">
   Vue.component('heuft-charts', {
     delimiters: ["[[", "]]"],
-    created: function () {
-      this.setChart(this.heuft1);
-      this.setChart(this.heuft2);
-
-      this.$nextTick(function () {
-        this.generateChart(this.heuft1);
-        this.generateChart(this.heuft2);
-      });
-    },
+    props: ['unit', 'product', 'line', 'date'],
     data: function () {
       return {
         data: [],
         heuft1: {
           el: '#heuft_1_chart',
-          url: '',
+          url: '/API/Heuft1/',
           labels: [],
           data: [],
           options: {
@@ -37,7 +29,7 @@
         },
         heuft2: {
           el: '#heuft_2_chart',
-          url: '',
+          url: '/API/Heuft2/',
           labels: [],
           data: [],
           options: {
@@ -50,24 +42,42 @@
     methods: {
       setChart: function (chart) {
 
+        chart.url += '?line=' + this.line;
+        chart.url += '&product=' + this.product;
+        chart.url += '&unit=' + this.unit;
+        chart.url += '&date=' + this.date;
+
         $.get(chart.url, function (response) {
           var data = [];
-          for (var item in response) {
-            data.push(item.canted_closure);
-            data.push(item.leaking_pressure);
-            data.push(item.low_fill);
-            data.push(item.uncrowned);
+          if (chart.el === '#heuft_2_chart') {
+            for (var item in response) {
+              data.push(item.canted_closure);
+              data.push(item.leaking_pressure);
+              data.push(item.low_fill);
+              data.push(item.uncrowned);
+            }
+            chart.labels = ['Canted Closure', 'Leaking Pressure', 'Low Fill', 'Uncrowned']
+
+          } else if (chart.el === '#heuft_1_chart') {
+            for (var item in response) {
+              data.push(item.filling_tube);
+              data.push(item.filling);
+              data.push(item.closure);
+            }
+            chart.labels = ['Filling Tube', 'Filling', 'Clolsure'];
+
           }
 
           //set data
-          chart.labels = ['Canted Closure', 'Leaking Pressure', 'Low Fill', 'Uncrowned']
           chart.data = data;
+
+          this.generateChart(chart);
 
         });
       },
       generateChart: function (chart) {
 
-        var ctx = $(chart.el).get(0).getContext('2d');
+        var ctx = $(chart.el)[0].getContext('2d');
 
         var chart = new Chart(ctx, {
           type: 'bar',

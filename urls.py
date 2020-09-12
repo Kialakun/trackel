@@ -34,7 +34,7 @@ router.register(r'Shifts', ShiftViewSet)
 router.register(r'ShiftsExport', ShiftExportViewSet, basename='shiftsexport')
 router.register(r'Supervisors', SupervisorViewSet)
 router.register(r'SupervisorsExport', SupervisorExportViewSet, basename='supervisorsexport')
-router.register(r'Heuft1', Heuft1ViewSet)
+router.register(r'Heuft1', Heuft1ViewSet, basename='heuft1')
 router.register(r'Heuft2', Heuft2ViewSet, basename='heuft2')
 
 urlpatterns = [

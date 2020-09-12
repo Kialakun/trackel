@@ -48,11 +48,19 @@
             <div class="row">
               <div class="col-lg-6">
                 <h6 class="text-secondary" id="canChartTitle">Can Line</h6>
-                <canvas :key="ldChartKey" v-on:click="ldChartCanClickHandler" id="ld-chart-can"></canvas>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <canvas :key="ldChartKey" v-on:click="ldChartCanClickHandler" id="ld-chart-can"></canvas>
+                  </div>
+                </div>
               </div>
               <div class="col-lg-6">
                 <h6 class="text-secondary" id="canChartTitle">Bottle Line</h6>
-                <canvas :key="ldChartKey" id="ld-chart-bottle"></canvas>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <canvas :key="ldChartKey" id="ld-chart-bottle"></canvas>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="row">
@@ -64,7 +72,7 @@
           </div>
         </div>
         <div v-if="heuftActive">
-          <heuft-charts ref="heuftcharts"></heuft-charts>
+          <heuft-charts ref="heuftcharts" v-bind:date="selected.date" v-bind:unit"selected.unit" v-bind:line="selected.line" v-bind:product="selected.product" ></heuft-charts>
         </div>
       </div>
     </div>
@@ -84,10 +92,10 @@
 {% load_heuft_charts %}
 <script type="text/javascript">
 
-
   var app = new Vue({
     el: '#app',
     delimiters: ["[[", "]]"],
+    components: {},
     mounted: function(){
       this.$nextTick(function(){
         var obj = this;
@@ -95,11 +103,15 @@
       });
     },
     data: {
+      heuftChartsKey: 0,
       elActive: true,
       ldActive: false,
       heuftActive: false,
       ldChartTitle: 'Loss Deployment',
-      ldChartUrl: '/API/',
+      ldChartUrls: {
+        heuft1: 0,
+        heuft2: 0
+      },
       elChartTitle: 'Extract Loss By Month',
       elChartUrl: '/api/ElMonthSummary',
       elChartUnit: 'month',
@@ -113,6 +125,12 @@
       ldChartCan: 0,
       ldChartBottle: 0,
       ldDate: 0,
+      selected: {
+        date: 0,
+        unit: 0,
+        line: 0,
+        product: 0,
+      }
     },
     methods: {
       elRefreshButton: function () {
@@ -148,15 +166,21 @@
         //get value of the element clicked
         if (first_point) {
            var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
+           var dataLabel = chart.data.datasets[first_point._datasetIndex].label;
+           var label = chart.data.labels[first_point._index];
          }
-         console.log(value);
-        //set urls before activating
-        this.$refs.heuftcharts.heuft1.url = '/api/rejectsmonthsummarybyheuft?heuft=1';
-        this.$refs.heuftcharts.heuft2.url = '';
+         console.log(dataLabel);
 
+        // set selected values
+        this.selected.date = this.ldDate;
+        this.selected.product = this.label;
+        this.selected.line = 'CAN';
+        this.selected.unit = this.elChartUnit;
         //activate chart
         this.ldActive = false;
-        this.heuftActive = true;
+        this.$nextTick(function () {
+          this.heuftActive = true
+        });
 
       },
       chartClickHandler: function (evt) {
@@ -180,12 +204,20 @@
              const month = date.toLocaleString('default', { month: 'long' });
              this.ldChartTitle = 'Loss Deployment For ' + month;
              this.ldChartTitleKey++;
-             this.ldChartUrl = '/api/rejectsmonthsummary?line=';
+
+             // set heuft urls
+             this.ldChartUrls.heuft1 = '/API/Heuft1/?unit=m&line=';
+             this.ldChartUrls.heuft2 = '/API/Heuft2/?unit=m&line=';
+
            } else if (this.elChartUnit == 'week') {
              const week = date.getWeek();
              this.ldChartTitle = 'Loss Deployment For Week ' + week;
              this.ldChartTitleKey++;
-             this.ldChartUrl = '/api/rejectsweeksummary?line=';
+
+             // set heuft urls
+             this.ldChartUrls.heuft1 = '/API/Heuft1/?unit=w&line=';
+             this.ldChartUrls.heuft2 = '/API/Heuft2/?unit=w&line=';
+
            }
            //set date so it can be used in refresh button
            this.ldDate = value.t;
@@ -194,14 +226,14 @@
            this.ldActive = true;
            this.ldChartKey++;
 
-           var params = '&d=' + value.t;
+           var params = '&date=' + value.t;
 
            //destroy elChart
            chart.destroy();
-
-           this.generateLdChart('ld-chart-can', params);
-           this.generateLdChart('ld-chart-bottle', params);
-           console.log(value);
+           this.$nextTick(function () {
+             this.generateLdChart('ld-chart-can', params);
+             this.generateLdChart('ld-chart-bottle', params);
+           });
         }
       },
       setElChartUnit: function (unit) {
@@ -244,37 +276,62 @@
           var type = 'BOTTLE';
         }
         //create url
-        var url = this.ldChartUrl + type + params;
+        var urls = {
+          'Heuft 1 Rejects': this.ldChartUrls.heuft1 + type + params + '&groupby=1',
+          'Heuft 2 Rejects': this.ldChartUrls.heuft2 + type + params + '&groupby=1'
+        };
 
-        //ajax call
-        $.get(url, function(response){
-          var res = response;
-          var labels = [];
+        //datasets for chartjs
+        var datasets = [{
+          label: 'Heuft 1 Rejects',
+          backgroundColor: 'rgb(0, 10, 255, 0.5)',
+          borderColor: 'rgb(0, 10, 255)',
+          borderWidth: 0.5,
+          data: []
+        },{
+          label: 'Heuft 2 Rejects',
+          backgroundColor: 'rgb(200, 200, 0, 0.5)',
+          borderColor: 'rgb(200, 200, 0)',
+          borderWidth: 0.5,
+          data: []
+        }];
+
+        var labels = [];
+
+        // heutf 1 ajax call
+        $.get(urls['Heuft 1 Rejects'], function (response) {
+
+          var res = response.results;
 
           for (var item in res) {
-            labels.push(res[item]['product'])
-          }
-          //datasets for chartjs
-          var datasets = [{
-            label: 'Heuft 1 Rejects',
-            backgroundColor: 'rgb(0, 10, 255, 0.5)',
-            borderColor: 'rgb(0, 10, 255)',
-            borderWidth: 0.5,
-            data: []
-          },{
-            label: 'Heuft 2 Rejects',
-            backgroundColor: 'rgb(200, 200, 0, 0.5)',
-            borderColor: 'rgb(200, 200, 0)',
-            borderWidth: 0.5,
-            data: []
-          }];
-          // set the data for datasets
-          for (var item in res) {
-            datasets[0].data.push(res[item].heuft_1_rejects_total);
-            datasets[1].data.push(res[item].heuft_2_rejects_total);
+            if (res[item].product in labels) {
+              labels.push(res[item].product);
+            }
+            datasets[0].data.push(res[item].total_loss);
           }
 
+          datasets[0].label = 'Heuft 1 Rejects';
+
+        });
+
+        // heutf 2 ajax call
+        $.get(urls['Heuft 2 Rejects'], function (response) {
+
+          var res = response.results;
+
+          for (var item in res) {
+            labels.push(res[item].product);
+            datasets[1].data.push(res[item].total_loss);
+          }
+
+          loadChart();
+          datasets[1].label = 'Heuft 2 Rejects';
+
+        });
+
+        function loadChart () {
           var ctx = document.getElementById(id).getContext('2d');
+
           var chart = new Chart(ctx, {
               // The type of chart we want to create
               type: 'bar',
@@ -287,15 +344,24 @@
               options: {
                 responsive: true,
                 aspectRatio: 2,
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true
+                    }
+                  }]
+                }
               }
             });
+
             //check which type and save charts, in order to destroy later
-          if (type === 'CAN') {
-            obj.ldChartCan = chart;
-          } else if (type === 'BOTTLE') {
-            obj.ldChartBottle = chart;
-          }
-        });
+            if (type === 'CAN') {
+              obj.ldChartCan = chart;
+            } else if (type === 'BOTTLE') {
+              obj.ldChartBottle = chart;
+            }
+        };
+
       },
       generateChart: function (id) {
         var obj = this;
@@ -324,9 +390,11 @@
                 aspectRatio: 2,
                 maintainAspectRatio: false,
                 scales: {
-                  yAxes: {
-                    beginAtZero: true,
-                  },
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true,
+                    }
+                  }],
                   xAxes: [{
                     ticks: {
                       source: 'data',
