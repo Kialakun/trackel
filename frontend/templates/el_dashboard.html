@@ -99,7 +99,7 @@
       ldActive: false,
       heuftActive: false,
       ldChartTitle: 'Loss Deployment',
-      ldChartUrl: '/api/rejectsmonthsummary?line=',
+      ldChartUrl: '/API/',
       elChartTitle: 'Extract Loss By Month',
       elChartUrl: '/api/ElMonthSummary',
       elChartUnit: 'month',
@@ -165,9 +165,11 @@
             var dt = new Date(this.getFullYear(),0,1);
             return Math.ceil((((this - dt) / 86400000) + dt.getDay()+1)/7);
         };
+
         //get the chart object and the element clicked
         var chart = this.elChart;
         var first_point = chart.getElementAtEvent(evt)[0];
+
         //get value of the element clicked
         if (first_point) {
            var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
