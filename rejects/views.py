@@ -47,7 +47,7 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
 
         # filter by product
         if product:
-            queryset = queryset.filter(product__id=product)
+            queryset = queryset.filter(product__product_code=product)
 
         # group by
         if groupby:
@@ -96,7 +96,7 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
 
         # filter by product
         if product:
-            queryset = queryset.filter(product__id=product)
+            queryset = queryset.filter(product__product_code=product)
 
         # group by
         if groupby:

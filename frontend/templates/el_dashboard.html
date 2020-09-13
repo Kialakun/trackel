@@ -72,7 +72,7 @@
           </div>
         </div>
         <div v-if="heuftActive">
-          <heuft-charts ref="heuftcharts" v-bind:date="selected.date" v-bind:unit"selected.unit" v-bind:line="selected.line" v-bind:product="selected.product" ></heuft-charts>
+          <heuft-charts ref="heuftcharts" v-bind:date="selected.date" v-bind:unit="selected.unit" v-bind:line="selected.line" v-bind:product="selected.product" ></heuft-charts>
         </div>
       </div>
     </div>
@@ -169,13 +169,13 @@
            var dataLabel = chart.data.datasets[first_point._datasetIndex].label;
            var label = chart.data.labels[first_point._index];
          }
-         console.log(dataLabel);
 
         // set selected values
         this.selected.date = this.ldDate;
-        this.selected.product = this.label;
+        this.selected.product = label;
         this.selected.line = 'CAN';
         this.selected.unit = this.elChartUnit;
+
         //activate chart
         this.ldActive = false;
         this.$nextTick(function () {

@@ -1,10 +1,20 @@
 <template id="heuftcharts">
   <div class="row">
     <div class="col-lg-6">
-      <canvas id="heuft_1_chart"></canvas>
+      <div class="row">
+        <h6>Heuft 1 Losses</h6>
+        <div class="col-lg-12">
+          <canvas id="heuft_1_chart"></canvas>
+        </div>
+      </div>
     </div>
     <div class="col-lg-6">
-      <canvas id="heuft_2_chart"></canvas>
+      <div class="row">
+        <h6>Heuft 2 Losses</h6>
+        <div class="col-lg-12">
+          <canvas id="heuft_2_chart"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +22,15 @@
 <script type="text/javascript">
   Vue.component('heuft-charts', {
     delimiters: ["[[", "]]"],
+    created: function () {
+      this.$nextTick( function () {
+        this.setChart(this.heuft1);
+        this.generateChart(this.heuft1);
+        this.setChart(this.heuft2);
+        this.generateChart(this.heuft2);
+
+      });
+    },
     props: ['unit', 'product', 'line', 'date'],
     data: function () {
       return {
@@ -23,7 +42,14 @@
           data: [],
           options: {
             responsive: true,
-            maintainAspectRatio: false,
+            aspectRatio: 2,
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                }
+              }]
+            }
           }
 
         },
@@ -34,13 +60,21 @@
           data: [],
           options: {
             responsive: true,
-            maintainAspectRatio: false,
+            aspectRatio: 2,
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                }
+              }]
+            }
           }
         }
       }
     },
     methods: {
       setChart: function (chart) {
+        var obj = this;
 
         chart.url += '?line=' + this.line;
         chart.url += '&product=' + this.product;
@@ -48,30 +82,36 @@
         chart.url += '&date=' + this.date;
 
         $.get(chart.url, function (response) {
-          var data = [];
+          var res = response.results;
+
           if (chart.el === '#heuft_2_chart') {
-            for (var item in response) {
-              data.push(item.canted_closure);
-              data.push(item.leaking_pressure);
-              data.push(item.low_fill);
-              data.push(item.uncrowned);
+            var data = [0,0,0,0,0];
+
+            for (var item in res) {
+              data[0] += parseFloat(res[item].canted_closure);
+              data[1] += parseFloat(res[item].leaking_pressure);
+              data[2] += parseFloat(res[item].low_fill);
+              data[3] += parseFloat(res[item].uncrowned);
+              data[4] += parseFloat(res[item].total_loss);
             }
-            chart.labels = ['Canted Closure', 'Leaking Pressure', 'Low Fill', 'Uncrowned']
+            chart.labels = ['Canted Closure', 'Leaking Pressure', 'Low Fill', 'Uncrowned', 'Total Loss']
 
           } else if (chart.el === '#heuft_1_chart') {
-            for (var item in response) {
-              data.push(item.filling_tube);
-              data.push(item.filling);
-              data.push(item.closure);
+            var data = [0,0,0,0];
+
+            for (var item in res) {
+              data[0] += parseFloat(res[item].filling_tube);
+              data[1] += parseFloat(res[item].filling);
+              data[2] += parseFloat(res[item].closure);
+              data[3] += parseFloat(res[item].total_loss);
             }
-            chart.labels = ['Filling Tube', 'Filling', 'Clolsure'];
+            chart.labels = ['Filling Tube', 'Filling', 'Clolsure', 'Total Loss'];
 
           }
 
           //set data
           chart.data = data;
-
-          this.generateChart(chart);
+          obj.generateChart(chart);
 
         });
       },
@@ -81,7 +121,15 @@
 
         var chart = new Chart(ctx, {
           type: 'bar',
-          data: chart.data,
+          data: {
+            labels: chart.labels,
+            datasets: [{
+              borderColor: 'rgb(0, 0, 255, 1)',
+              backgroundColor: 'rgb(0, 0, 255, 0.6)',
+              label: 'Loss %',
+              data: chart.data
+            }]
+          },
           options: chart.options
         });// end chart
 
