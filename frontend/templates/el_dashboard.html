@@ -55,10 +55,10 @@
                 </div>
               </div>
               <div class="col-lg-6">
-                <h6 class="text-secondary" id="canChartTitle">Bottle Line</h6>
+                <h6 class="text-secondary" id="bottleChartTitle">Bottle Line</h6>
                 <div class="row">
                   <div class="col-lg-12">
-                    <canvas :key="ldChartKey" id="ld-chart-bottle"></canvas>
+                    <canvas :key="ldChartKey" v-on:click="ldChartBottleClickHandler" id="ld-chart-bottle"></canvas>
                   </div>
                 </div>
               </div>
@@ -160,9 +160,34 @@
         //generate chart
         this.generateChart('el-chart');
       },
+      ldChartBottleClickHandler: function (evt) {
+        var chart = this.ldChartBottle;
+        var first_point = chart.getElementAtEvent(evt)[0];
+
+        //get value of the element clicked
+        if (first_point) {
+           var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
+           var dataLabel = chart.data.datasets[first_point._datasetIndex].label;
+           var label = chart.data.labels[first_point._index];
+         }
+
+        // set selected values
+        this.selected.date = this.ldDate;
+        this.selected.product = label;
+        this.selected.line = 'BOTTLE';
+        this.selected.unit = this.elChartUnit;
+
+        //activate chart
+        this.ldActive = false;
+        this.$nextTick(function () {
+          this.heuftActive = true
+        });
+
+      },
       ldChartCanClickHandler: function (evt) {
         var chart = this.ldChartCan;
         var first_point = chart.getElementAtEvent(evt)[0];
+
         //get value of the element clicked
         if (first_point) {
            var value = chart.data.datasets[first_point._datasetIndex].data[first_point._index];
@@ -184,6 +209,7 @@
 
       },
       chartClickHandler: function (evt) {
+
         //define getWeek function
         Date.prototype.getWeek = function() {
             var dt = new Date(this.getFullYear(),0,1);
@@ -219,8 +245,10 @@
              this.ldChartUrls.heuft2 = '/API/Heuft2/?unit=w&line=';
 
            }
+
            //set date so it can be used in refresh button
            this.ldDate = value.t;
+
            //set active states for el or ld
            this.elActive = false;
            this.ldActive = true;
@@ -238,6 +266,7 @@
       },
       setElChartUnit: function (unit) {
         this.elChartUnit = unit;
+
         // set the units either month or week with
         // corresponding urls
         if (unit === 'week') {
@@ -249,6 +278,7 @@
           this.elChartUrl = '/api/ElMonthSummary';
           this.xLabelEl = 'Months'
         }
+
         //resfresh and generate chart el
         this.elChartKey++;
         this.$nextTick(function () {
@@ -256,6 +286,7 @@
         });
       },
       formatData: function (data) {
+
         //data formatting for date and time series display
         results = [];
         for (var val in data) {
@@ -267,14 +298,17 @@
         return results;
       },
       generateLdChart: function (id, params) {
+
         //set obj to access again from jquery
         var obj = this;
+
         //check the current state, either week or month
         if (id === 'ld-chart-can') {
           var type = 'CAN';
         } else if (id === 'ld-chart-bottle') {
           var type = 'BOTTLE';
         }
+
         //create url
         var urls = {
           'Heuft 1 Rejects': this.ldChartUrls.heuft1 + type + params + '&groupby=1',
@@ -296,40 +330,79 @@
           data: []
         }];
 
-        var labels = [];
-
         // heutf 1 ajax call
         $.get(urls['Heuft 1 Rejects'], function (response) {
+          const res = response.results;
 
-          var res = response.results;
+          // store data
+          var data = [];
+          var ls = [];
 
           for (var item in res) {
-            if (res[item].product in labels) {
-              labels.push(res[item].product);
+            ls.push(res[item].product);
+          }
+          data.push(res);
+
+          // heutf 2 ajax call
+          $.get(urls['Heuft 2 Rejects'], function (response) {
+            const res2 = response.results;
+
+            data.push(res2);
+
+            for (var item in res2) {
+              ls.push(res2[item].product);
             }
-            datasets[0].data.push(res[item].total_loss);
-          }
 
-          datasets[0].label = 'Heuft 1 Rejects';
+            var labels = Array.from(new Set(ls));
+            for (var label in labels) {
+              // loop through results for heuft 1
+              var nomatch1 = true;
+
+              for (var item in data[0]) {
+                const test = data[0][item].product === labels[label];
+                if (test) {
+                  datasets[0].data.push(parseFloat(data[0][item].total_loss));
+                  nomatch1 = false;
+                  break;
+                }
+              }
+
+              if (nomatch1) {
+                datasets[0].data.push(0);
+              }
+
+              var nomatch2 = true;
+              // loop through results for heuft 2
+              for (var item in data[1]) {
+                if (data[1][item].product === labels[label]) {
+                  datasets[1].data.push(parseFloat(data[1][item].total_loss));
+                  nomatch2 = false;
+                  break;
+                }
+              }
+
+              if (nomatch2) {
+                datasets[1].data.push(0);
+              }
+            }
+            loadChart(id, type, labels, datasets);
+            console.log(datasets);
+          });
 
         });
 
-        // heutf 2 ajax call
-        $.get(urls['Heuft 2 Rejects'], function (response) {
-
-          var res = response.results;
-
-          for (var item in res) {
-            labels.push(res[item].product);
-            datasets[1].data.push(res[item].total_loss);
+        function loadChart (id, type, labels, datasets) {
+          if (type === 'CAN') {
+            if (obj.ldChartCan !== 0) {
+              obj.ldChartCan.destroy();
+            }
+          }
+          if (type === 'BOTTLE') {
+            if (obj.ldChartBottle !== 0) {
+              obj.ldChartBottle.destroy();
+            }
           }
 
-          loadChart();
-          datasets[1].label = 'Heuft 2 Rejects';
-
-        });
-
-        function loadChart () {
           var ctx = document.getElementById(id).getContext('2d');
 
           var chart = new Chart(ctx, {
@@ -366,7 +439,7 @@
       generateChart: function (id) {
         var obj = this;
         // ajax call
-        $.get(obj.elChartUrl, function(response){
+        $.get(obj.elChartUrl, function (response) {
           var d = obj.formatData(response.results);
           var data = {
             datasets: [{
