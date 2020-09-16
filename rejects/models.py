@@ -23,6 +23,7 @@ class Heuft1(models.Model):
     class Meta:
         verbose_name = 'Heuft1'
         verbose_name_plural = 'Heuft1s'
+        unique_together = ['date', 'line']
 
     def __str__(self):
         return str(self.id)
@@ -46,6 +47,7 @@ class Heuft2(models.Model):
     class Meta:
         verbose_name = 'Heuft2'
         verbose_name_plural = 'Heuft2s'
+        unique_together = ['date', 'line']
 
     def __str__(self):
         return str(self.id)

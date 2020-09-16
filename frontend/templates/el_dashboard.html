@@ -85,7 +85,7 @@
         Include Chartjs
 {% endcomment %}
 <script src="{% static 'js/Chart.bundle.min.js' %}" charset="utf-8"></script>
-
+<script src="{% static 'js/elCalculations.js' %}" charset="utf-8"></script>
 {% comment %}
         Vue Instance
 {% endcomment %}
@@ -125,6 +125,7 @@
       ldChartCan: 0,
       ldChartBottle: 0,
       ldDate: 0,
+      ldExtractLoss: 0,
       selected: {
         date: 0,
         unit: 0,
@@ -248,8 +249,9 @@
 
            //set date so it can be used in refresh button
            this.ldDate = value.t;
+           this.ldExtractLoss = value.y;
 
-           //set active states for el or ld
+            //set active states for el or ld
            this.elActive = false;
            this.ldActive = true;
            this.ldChartKey++;
@@ -328,6 +330,12 @@
           borderColor: 'rgb(200, 200, 0)',
           borderWidth: 0.5,
           data: []
+        },{
+          label: 'Other Losses',
+          backgroundColor: 'rgb(10, 210, 120, 0.5)',
+          borderColor: 'rgb(10, 210, 120)',
+          borderWidth: 0.5,
+          data: []
         }];
 
         // heutf 1 ajax call
@@ -385,8 +393,18 @@
                 datasets[1].data.push(0);
               }
             }
+            // calculate other losses
+            const reducer = (accumulator, currentValue) => accumulator + currentValue;
+            var otherLoss = calculateOtherLosses(
+              obj.ldExtractLoss,
+              datasets[0].data.reduce(reducer),
+              datasets[1].data.reduce(reducer)
+            )
+
+            for (label in labels) {
+              datasets[2].data.push(otherLoss);
+            }
             loadChart(id, type, labels, datasets);
-            console.log(datasets);
           });
 
         });

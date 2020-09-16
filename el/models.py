@@ -9,7 +9,7 @@ from django.dispatch import receiver
 class ExtractLossData(models.Model):
     """data model for extract loss and shift"""
     month = models.IntegerField(blank=True, null=True)
-    week = models.IntegerField(blank=True, null=True)
+    week = models.IntegerField(blank=True, null=True, unique=True)
     date = models.DateField(default=datetime.date.today, verbose_name='Week End Date')
     bbt_volume = models.DecimalField(max_digits=4, decimal_places=2, verbose_name="BBT Volume", help_text="Enter the BBT volume.")
     packaged = models.IntegerField(blank=True, null=True, verbose_name='Packaged', help_text="Enter the volume packaged.")
