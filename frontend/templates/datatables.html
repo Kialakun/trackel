@@ -29,7 +29,8 @@
 </template>
 
 <template id="trackel-dt" data-url="{% url url %}">
-  <table id="tt" :key="tableKey" class="table table-sm table-striped" data-server-side="true" data-ajax="{% url url %}?format=datatables">
+  <div id="tableData" data-url="{% url url %}?format=datatables"></div>
+  <table id="tt" :key="tableKey" lass="table table-sm table-striped" :data-server-side="serverSide" :data-ajax="ajaxUrl">
     <thead>
       <tr>
         <th v-for="header in headers" :data-data="header.label" :data-name="header.label">[[ header.value ]]</th>
@@ -138,9 +139,12 @@
     delimiters: ["[[", "]]"],
     mounted: function () {
       this.getData();
+      this.getAjaxUrl();
       this.tableKey++;
       this.$nextTick(function () {
-        $(this.element).DataTable();
+        $(this.element).DataTable({
+          order: [[1, 'asc']],
+        });
       });
     },
     data: function(){
@@ -149,9 +153,15 @@
         'headers': [],
         'rows': 0,
         'tableKey': 0,
+        'ajaxUrl': 0,
+        'serverSide': true,
       }
     },
     methods: {
+      getAjaxUrl: function () {
+        var url = $('#tableData').data('url');
+        this.ajaxUrl = url;
+      },
       getData: function(){
         var object = this;
         var url = $('#trackel-dt').data('url');
