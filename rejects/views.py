@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Avg
 from django.db.models.functions import ExtractMonth, ExtractWeek
 from django.http import Http404
 from rest_framework import viewsets, generics
@@ -53,12 +53,12 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
         if groupby:
             queryset = queryset.values('product__id'). \
             annotate(
-                total_loss=Sum('total_loss'),
+                total_loss=Avg('total_loss'),
                 product=F('product__product_code'),
-                canted_closure=Sum('canted_closure'),
-                leaking_pressure=Sum('leaking_pressure'),
-                low_fill=Sum('low_fill'),
-                uncrowned=Sum('uncrowned')
+                canted_closure=Avg('canted_closure'),
+                leaking_pressure=Avg('leaking_pressure'),
+                low_fill=Avg('low_fill'),
+                uncrowned=Avg('uncrowned')
                 )
         return queryset
 
@@ -102,11 +102,11 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
         if groupby:
             queryset = queryset.values('product__id'). \
             annotate(
-                total_loss=Sum('total_loss'),
+                total_loss=Avg('total_loss'),
                 product=F('product__product_code'),
-                filling_tube=Sum('filling_tube'),
-                filling=Sum('filling'),
-                closure=Sum('closure')
+                filling_tube=Avg('filling_tube'),
+                filling=Avg('filling'),
+                closure=Avg('closure')
                 )
         return queryset
 
