@@ -189,7 +189,7 @@ PWA_APP_ORIENTATION = 'any'
 PWA_APP_START_URL = '/'
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/trackEL_logo.png',
+        'src': '/static/images/trackel_logo.png',
         'sizes': '160x160'
     }
 ]

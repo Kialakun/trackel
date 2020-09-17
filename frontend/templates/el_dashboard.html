@@ -45,6 +45,24 @@
             <div class="row">
               <h6 :key="ldChartTitleKey">[[ ldChartTitle ]]</h6>
             </div>
+            <div class="d-flex flex-row justify-content-right">
+              <div class="col-lg-3">
+                <h6 class="m-1 text-primary">[[ ldExtractLoss ]]%</h6>
+                <p>Extract Loss</p>
+              </div>
+              <div class="col-lg-3">
+                <h6 class="m-1 text-primary">[[ lossSummary.heuft1Loss ]]% </h6>
+                <p>Heuft 1 Loss</p>
+              </div>
+              <div class="col-lg-3">
+                <h6 class="m-1 text-primary">[[ lossSummary.heuft2Loss ]]% </h6>
+                <p>Heuft 2 Loss</p>
+              </div>
+              <div class="col-lg-3">
+                <h6 class="m-1 text-primary">[[ lossSummary.otherLoss ]]% </h6>
+                <p>Other Losses</p>
+              </div>
+            </div>
             <div class="row">
               <div class="col-lg-6">
                 <h6 class="text-secondary" id="canChartTitle">Can Line</h6>
@@ -131,6 +149,11 @@
         unit: 0,
         line: 0,
         product: 0,
+      },
+      lossSummary: {
+        otherLoss: 0,
+        heuft1Loss: 0,
+        heuft2Loss: 0,
       }
     },
     methods: {
@@ -330,12 +353,6 @@
           borderColor: 'rgb(200, 200, 0)',
           borderWidth: 0.5,
           data: []
-        },{
-          label: 'Other Losses',
-          backgroundColor: 'rgb(10, 210, 120, 0.5)',
-          borderColor: 'rgb(10, 210, 120)',
-          borderWidth: 0.5,
-          data: []
         }];
 
         // heutf 1 ajax call
@@ -393,17 +410,20 @@
                 datasets[1].data.push(0);
               }
             }
+            // summary of loss
             // calculate other losses
             const reducer = (accumulator, currentValue) => accumulator + currentValue;
+
+            obj.lossSummary.heuft1Loss = datasets[0].data.reduce(reducer);
+            obj.lossSummary.heuft2Loss = datasets[1].data.reduce(reducer);
+
             var otherLoss = calculateOtherLosses(
               obj.ldExtractLoss,
-              datasets[0].data.reduce(reducer),
-              datasets[1].data.reduce(reducer)
+              obj.lossSummary.heuft1Loss,
+              obj.lossSummary.heuft2Loss
             )
 
-            for (label in labels) {
-              datasets[2].data.push(otherLoss);
-            }
+            obj.lossSummary.otherLoss = otherLoss;
             loadChart(id, type, labels, datasets);
           });
 

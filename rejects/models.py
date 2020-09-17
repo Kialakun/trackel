@@ -10,7 +10,7 @@ class Heuft1(models.Model):
 
     LINES = (('CAN', 'Can Line'), ('BOTTLE', 'Bottle Line'))
 
-    date = models.DateField(default=datetime.datetime.today)
+    date = models.DateField(default=datetime.date.today)
     line = models.CharField(blank=True, max_length=100, choices=LINES, verbose_name='Line')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='heuft_1_product', verbose_name='Product')
     fill_content = models.IntegerField(blank=True, null=True, verbose_name='Fill Content')
@@ -33,7 +33,7 @@ class Heuft2(models.Model):
 
     LINES = (('CAN', 'Can Line'), ('BOTTLE', 'Bottle Line'))
 
-    date = models.DateField(default=datetime.datetime.today)
+    date = models.DateField(default=datetime.date.today)
     line = models.CharField(blank=True, max_length=100, choices=LINES, verbose_name='Line')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='heuft_2_product', verbose_name='Product')
     fill_content = models.IntegerField(blank=True, null=True, verbose_name='Fill Content')

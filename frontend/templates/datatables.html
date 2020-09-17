@@ -5,11 +5,16 @@
         For Showing datatables and triggering update forms
 {% endcomment %}
 
+{% block extra_css_imports %}
+<link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+{% endblock extra_css_imports %}
+
 {% block content %}
 
 <div id="app">
+  <trackel-datatable-btngroup></trackel-datatable-btngroup>
+
   <div class="table-responsive">
-    <trackel-datatable-btngroup></trackel-datatable-btngroup>
     <trackel-datatable ref="tableRef"></trackel-datatable>
   </div>
   <div id="formUrl" data-url="{% url url %}"></div>
@@ -17,8 +22,13 @@
 </div>
 {% endblock content %}
 
+{% block extra_js_imports %}
+
+<script src="{% static 'js/jquery.dataTables.min.js' %}" charset="utf-8"></script>
+<script src="{% static 'js/dataTables.bootstrap4.min.js' %}" charset="utf-8"></script>
+{% endblock extra_js_imports %}
+
 {% block vue %}
-<script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
 
 <template id="trackel-dt-btngrp">
   <div class="btn-group float-right" role="group" aria-label="datatable button group">
@@ -29,14 +39,18 @@
 </template>
 
 <template id="trackel-dt" data-url="{% url url %}">
-  <div id="tableData" data-url="{% url url %}?format=datatables"></div>
-  <table id="tt" :key="tableKey" lass="table table-sm table-striped" :data-server-side="serverSide" :data-ajax="ajaxUrl">
-    <thead>
-      <tr>
-        <th v-for="header in headers" :data-data="header.label" :data-name="header.label">[[ header.value ]]</th>
-      </tr>
-    </thead>
-  </table>
+  <div class="row mt-1">
+    <div class="col-lg-12">
+      <div id="tableData" data-url="{% url url %}?format=datatables"></div>
+      <table id="tt" class="table table-sm table-striped" :key="tableKey" :data-server-side="serverSide" :data-ajax="ajaxUrl">
+        <thead>
+          <tr>
+            <th v-for="header in headers" :data-data="header.label" :data-name="header.label">[[ header.value ]]</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
 </template>
 
 {% comment %}
@@ -85,6 +99,7 @@
           data[form[name]['name']] = form[name]['value'];
         }
         $.post(url, data, function (data, status) {
+          app.$refs.tableRef.getData();
           $('#addModal').modal('hide');
           alert("Done:Saved Successfully!");
         }).fail(function (xhr, status, error) {
@@ -120,16 +135,8 @@
     },
     methods: {
       refreshTable : function () {
-        app.tableKey += 1;
+        app.$refs.tableRef.tableKey++;
         app.$refs.tableRef.getData();
-
-        app.$nextTick(function () {
-          $(document).ready(function () {
-            $('#tt').DataTable({
-              order: [[1, 'asc']],
-            });
-          });
-        });
       },
     },
     template: '#trackel-dt-btngrp'
@@ -138,23 +145,19 @@
   Vue.component('trackel-datatable',{
     delimiters: ["[[", "]]"],
     mounted: function () {
-      this.getData();
-      this.getAjaxUrl();
       this.tableKey++;
-      this.$nextTick(function () {
-        $(this.element).DataTable({
-          order: [[1, 'asc']],
-        });
-      });
+      this.getAjaxUrl();
+      this.getData();
     },
-    data: function(){
+    data: function () {
       return {
-        'element': '#tt',
-        'headers': [],
-        'rows': 0,
-        'tableKey': 0,
-        'ajaxUrl': 0,
-        'serverSide': true,
+        element: '#tt',
+        headers: [],
+        rows: 0,
+        tableKey: 0,
+        ajaxUrl: 0,
+        serverSide: true,
+        table: 0,
       }
     },
     methods: {
@@ -164,12 +167,24 @@
       },
       getData: function(){
         var object = this;
+
         var url = $('#trackel-dt').data('url');
+
         $.get(url).done(function(response){
           object.rows = response.results;
           object.headers = object.getHeaders(object);
-          console.log(object.rows);
+
+          if (!(object.table === 0)) {
+            object.table.destroy();
+          }
+
+          object.$nextTick(function () {
+            var table = $(object.element).DataTable({order:[[0,'desc']]});
+            object.table = table;
+          });
+
         });
+
       },
       formatString: function(string){
         var sentence = string.toLowerCase().split("_");

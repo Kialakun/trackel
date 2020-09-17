@@ -17,6 +17,7 @@
 
   <!-- Custom styles for this template -->
   <link href="{% static 'css/simple-sidebar.css' %}" rel="stylesheet">
+  {% block extra_css_imports %}{% endblock extra_css_imports %}
   {% progressive_web_app_meta %}
 
 </head>
@@ -121,6 +122,7 @@
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
   <script src="{% static 'js/vue.js' %}" charset="utf-8"></script>
+  {% block extra_js_imports %}{% endblock extra_js_imports %}
 
   {% block vue %}{% endblock vue %}
 

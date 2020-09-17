@@ -35,6 +35,14 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
         # line
         line = self.request.query_params.get('line', None)
 
+        # filter by line
+        if line:
+            queryset = queryset.filter(line=line)
+
+        # filter by product
+        if product:
+            queryset = queryset.filter(product__product_code=product)
+
         # filter by month or week
         if unit == 'w':
             queryset = queryset.filter(date__week=date.isocalendar()[1])
@@ -44,6 +52,7 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
                 annotate(
                     total_loss=Sum('total_loss'),
                     product=F('product__product_code'),
+                    line=F('line'),
                     canted_closure=Sum('canted_closure'),
                     leaking_pressure=Sum('leaking_pressure'),
                     low_fill=Sum('low_fill'),
@@ -58,19 +67,12 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
                 annotate(
                     total_loss=Avg('total_loss'),
                     product=F('product__product_code'),
+                    line=F('line'),
                     canted_closure=Avg('canted_closure'),
                     leaking_pressure=Avg('leaking_pressure'),
                     low_fill=Avg('low_fill'),
                     uncrowned=Avg('uncrowned')
                     )
-
-        # filter by line
-        if line:
-            queryset = queryset.filter(line=line)
-
-        # filter by product
-        if product:
-            queryset = queryset.filter(product__product_code=product)
 
         return queryset
 
@@ -96,12 +98,6 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
         # line
         line = self.request.query_params.get('line', None)
 
-        # filter by month or week
-        if unit == 'w':
-            queryset = queryset.filter(date__week=date.isocalendar()[1])
-        elif unit == 'm':
-            queryset = queryset.filter(date__month=date.month)
-
         # filter by line
         if line:
             queryset = queryset.filter(line=line)
@@ -110,16 +106,35 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
         if product:
             queryset = queryset.filter(product__product_code=product)
 
-        # group by
-        if groupby:
-            queryset = queryset.values('product__id'). \
-            annotate(
-                total_loss=Avg('total_loss'),
-                product=F('product__product_code'),
-                filling_tube=Avg('filling_tube'),
-                filling=Avg('filling'),
-                closure=Avg('closure')
-                )
+        # filter by month or week
+        if unit == 'w':
+            queryset = queryset.filter(date__week=date.isocalendar()[1])
+            # group by
+            if groupby:
+                queryset = queryset.values('product__id'). \
+                annotate(
+                    total_loss=Sum('total_loss'),
+                    product=F('product__product_code'),
+                    line=F('line'),
+                    filling_tube=Sum('filling_tube'),
+                    filling=Sum('filling'),
+                    closure=Sum('closure')
+                    )
+
+        elif unit == 'm':
+            queryset = queryset.filter(date__month=date.month)
+            # group by
+            if groupby:
+                queryset = queryset.values('product__id'). \
+                annotate(
+                    total_loss=Avg('total_loss'),
+                    product=F('product__product_code'),
+                    line=F('line'),
+                    filling_tube=Avg('filling_tube'),
+                    filling=Avg('filling'),
+                    closure=Avg('closure')
+                    )
+
         return queryset
 
     serializer_class = Heuft1Serializer
