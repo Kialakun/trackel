@@ -8,6 +8,14 @@ body {
   overflow-x: hidden;
 }
 
+@media (max-width:480px) {
+  body {
+    font-size: 0.6rem !important;
+  }
+  h6 {
+    font-size: 120%;
+  }
+}
 .chart {
   position: relative;
   height: 65vh;

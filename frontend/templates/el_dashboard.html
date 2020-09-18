@@ -125,6 +125,7 @@
       });
     },
     data: {
+      requestPromise: 0,
       heuftChartsKey: 0,
       elActive: true,
       ldActive: false,
@@ -161,6 +162,11 @@
       }
     },
     methods: {
+      clearLossSummary: function () {
+        for (var item in this.lossSummary) {
+          this.lossSummary[item] = 0;
+        }
+      },
       heuftBackButton: function () {
         this.heuftActive = false;
         this.ldActive = true;
@@ -186,6 +192,8 @@
         //destroy ld charts
         this.ldChartCan.destroy();
         this.ldChartBottle.destroy();
+        //reset lossSummaryValues
+        this.clearLossSummary();
         //set active states for charts el or ld
         this.elActive = true;
         this.ldActive = false;
@@ -366,7 +374,7 @@
         }];
 
         // heutf 1 ajax call
-        $.get(urls['Heuft 1 Rejects'], function (response) {
+        this.requestPromise = $.get(urls['Heuft 1 Rejects'], function (response) {
           const res = response.results;
 
           // store data
