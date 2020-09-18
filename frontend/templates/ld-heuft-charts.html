@@ -1,19 +1,32 @@
 <template id="heuftcharts">
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="row">
-        <h6>Heuft 1 Losses</h6>
-        <div class="col-lg-12">
-          <canvas id="heuft_1_chart"></canvas>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <h6>[[ title ]]</h6>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="row">
+          <h6 class="text-secondary">Heuft 1 Losses</h6>
+          <div class="col-lg-12" :key="chartKey">
+            <canvas id="heuft_1_chart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="row">
+          <h6 class="text-secondary">Heuft 2 Losses</h6>
+          <div class="col-lg-12" :key="chartKey">
+            <canvas id="heuft_2_chart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-lg-6">
-      <div class="row">
-        <h6>Heuft 2 Losses</h6>
-        <div class="col-lg-12">
-          <canvas id="heuft_2_chart"></canvas>
-        </div>
+    <div class="row">
+      <div class="btn-group" role="group" aria-label="back and refresh button group">
+        <slot name="back-button-slot"></slot>
+        <button @click="chartRefresh" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
       </div>
     </div>
   </div>
@@ -24,17 +37,13 @@
     delimiters: ["[[", "]]"],
     created: function () {
       this.$nextTick( function () {
-        this.setChart(this.heuft1);
-        this.generateChart(this.heuft1);
-        this.setChart(this.heuft2);
-        this.generateChart(this.heuft2);
-
+        this.generateAllCharts();
       });
     },
-    props: ['unit', 'product', 'line', 'date'],
+    props: ['unit', 'product', 'line', 'date', 'title'],
     data: function () {
       return {
-        data: [],
+        chartKey: 0,
         heuft1: {
           el: '#heuft_1_chart',
           url: '/API/Heuft1/',
@@ -73,6 +82,16 @@
       }
     },
     methods: {
+      chartRefresh: function () {
+        this.chartKey++;
+        this.generateAllCharts();
+      },
+      generateAllCharts: function () {
+        this.setChart(this.heuft1);
+        this.generateChart(this.heuft1);
+        this.setChart(this.heuft2);
+        this.generateChart(this.heuft2);
+      },
       setChart: function (chart) {
         var obj = this;
 

@@ -90,7 +90,11 @@
           </div>
         </div>
         <div v-if="heuftActive">
-          <heuft-charts ref="heuftcharts" v-bind:date="selected.date" v-bind:unit="selected.unit" v-bind:line="selected.line" v-bind:product="selected.product" ></heuft-charts>
+          <heuft-charts ref="heuftcharts" :date="selected.date" :unit="selected.unit" :line="selected.line" :product="selected.product" :title="ldChartTitle">
+            <div slot="back-button-slot">
+              <button @click="heuftBackButton" type="button" class="btn btn-sm btn-outline-secondary">Back</button>
+            </div>
+          </heuft-charts>
         </div>
       </div>
     </div>
@@ -157,6 +161,11 @@
       }
     },
     methods: {
+      heuftBackButton: function () {
+        this.heuftActive = false;
+        this.ldActive = true;
+        this.ldRefreshButton();
+      },
       elRefreshButton: function () {
         //destroy el chart
         this.elChart.destroy();
@@ -167,7 +176,8 @@
         this.ldChartCan.destroy();
         this.ldChartBottle.destroy();
         //params = date for db filtering
-        var params = '&d=' + this.ldDate;
+        var params = '&date=' + this.ldDate;
+        console.log(this.ldDate);
         //ergenerate the charts
         this.generateLdChart('ld-chart-can', params);
         this.generateLdChart('ld-chart-bottle', params);
