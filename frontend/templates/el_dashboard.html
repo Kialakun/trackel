@@ -396,18 +396,31 @@
           'Heuft 2 Rejects': this.ldChartUrls.heuft2 + type + params + '&groupby=1'
         };
 
+        var blue = 'rgb(0, 10, 255, 0.5)';
+        var blueBorder = 'rgb(0, 10, 255)';
+
+        var brown = 'rgb(200, 200, 0, 0.5)';
+        var brownBorder = 'rgb(200, 200, 0)';
+
         //datasets for chartjs
         var datasets = [{
           label: 'Heuft 1 Rejects',
-          backgroundColor: 'rgb(0, 10, 255, 0.5)',
-          borderColor: 'rgb(0, 10, 255)',
+          backgroundColor: [],
+          borderColor: [],
           borderWidth: 0.5,
           data: []
         },{
           label: 'Heuft 2 Rejects',
-          backgroundColor: 'rgb(200, 200, 0, 0.5)',
-          borderColor: 'rgb(200, 200, 0)',
+          backgroundColor: [],
+          borderColor: [],
           borderWidth: 0.5,
+          data: []
+        },{
+          type: 'line',
+          label: 'Target',
+          backgroundColor: 'rgb(0,0,0,0)',
+          borderColor: 'rgb(0,255,0,1)',
+          borderWidth: 1,
           data: []
         }];
 
@@ -439,6 +452,13 @@
             for (var label in labels) {
               // loop through results for heuft 1
               var nomatch1 = true;
+              // push targets
+              datasets[2].data.push(3);
+              // push color
+              datasets[0].backgroundColor.push(blue);
+              datasets[0].borderColor.push(blueBorder);
+              datasets[1].backgroundColor.push(brown);
+              datasets[1].borderColor.push(brownBorder);
 
               for (var item in data[0]) {
                 const test = data[0][item].product === labels[label];
@@ -467,7 +487,6 @@
                 datasets[1].data.push(0);
               }
             }
-            console.log(obj.lossSummary.data);
             for (var item in datasets[0].data) {
               obj.lossSummary.data.heuft1.push(datasets[0].data[item]);
             }
@@ -475,7 +494,15 @@
               obj.lossSummary.data.heuft2.push(datasets[1].data[item]);
             }
 
+            // load chart
             loadChart(id, type, labels, datasets);
+
+            if (type === 'CAN') {
+              var chartObj = obj.ldChartCan;
+            } else if (type === 'BOTTLE') {
+              var chartObj = obj.ldChartBottle;
+            }
+            conditionalColoring(chartObj, 12);
           });
 
         });
