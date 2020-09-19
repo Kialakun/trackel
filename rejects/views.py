@@ -51,6 +51,7 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
                 queryset = queryset.values('product__id'). \
                 annotate(
                     total_loss=Sum('total_loss'),
+                    date=F('date'),
                     product=F('product__product_code'),
                     line=F('line'),
                     canted_closure=Sum('canted_closure'),
@@ -66,6 +67,7 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
                 queryset = queryset.values('product__id'). \
                 annotate(
                     total_loss=Avg('total_loss'),
+                    date=F('date'),
                     product=F('product__product_code'),
                     line=F('line'),
                     canted_closure=Avg('canted_closure'),
@@ -114,6 +116,7 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
                 queryset = queryset.values('product__id'). \
                 annotate(
                     total_loss=Sum('total_loss'),
+                    date=F('date'),
                     product=F('product__product_code'),
                     line=F('line'),
                     filling_tube=Sum('filling_tube'),
@@ -128,6 +131,7 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
                 queryset = queryset.values('product__id'). \
                 annotate(
                     total_loss=Avg('total_loss'),
+                    date=F('date'),
                     product=F('product__product_code'),
                     line=F('line'),
                     filling_tube=Avg('filling_tube'),

@@ -119,6 +119,12 @@
     delimiters: ["[[", "]]"],
     components: {},
     mounted: function(){
+      this.$root.$on('ajaxcomplete', (evt) => {
+        const vue = this;
+        setTimeout(function () {
+          vue.calculateLossSummary(vue.lossSummary.data.heuft1, vue.lossSummary.data.heuft2);
+        }, 500)
+      });
       this.$nextTick(function(){
         var obj = this;
         this.generateChart('el-chart');
@@ -166,15 +172,12 @@
       },
     },
     methods: {
-      asyncGenerateLossSummary: async function (params) {
+      asyncGenerateLossSummary: function (params) {
         const vue = this;
         var data = vue.generateLdChart('ld-chart-can', params)
         .then((response) => {
-          var res = vue.generateLdChart('ld-chart-bottle', params);
-          setTimeout( function () {
-            vue.calculateLossSummary(vue.lossSummary.data.heuft1, vue.lossSummary.data.heuft2);
-          }, 1000)
-          return [response, res];
+          var res = vue.generateLdChart('ld-chart-bottle', params)
+          .then( (resp) => {vue.$emit('ajaxcomplete', 'DONE')});
         });
       },
       calculateLossSummary: function (heuft1data, heuft2data) {
@@ -194,7 +197,12 @@
       },
       clearLossSummary: function () {
         for (var item in this.lossSummary) {
-          this.lossSummary[item] = 0;
+          if (item === 'data') {
+            this.lossSummary.data.heuft1 = [];
+            this.lossSummary.data.heuft2 = [];
+          } else {
+            this.lossSummary[item] = 0;
+          }
         }
       },
       heuftBackButton: function () {
@@ -459,6 +467,7 @@
                 datasets[1].data.push(0);
               }
             }
+            console.log(obj.lossSummary.data);
             for (var item in datasets[0].data) {
               obj.lossSummary.data.heuft1.push(datasets[0].data[item]);
             }

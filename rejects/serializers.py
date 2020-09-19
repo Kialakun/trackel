@@ -1,3 +1,4 @@
+import datetime
 from django.db.models import Sum, Avg
 from rest_framework import serializers
 from trackel.el.models import ExtractLossData
@@ -8,6 +9,15 @@ from trackel.products.models import Product
 class Heuft1Serializer(serializers.ModelSerializer):
     """Heuft1 serializer"""
     product = ProductField(queryset=Product.objects.all())
+    week = serializers.SerializerMethodField()
+
+    def get_week(self, instance):
+        """get week iso from date"""
+        try:
+            date = instance.date
+        except Exception as e:
+            date = instance['date']
+        return date.isocalendar()[1]
 
     class Meta:
         model = Heuft1
@@ -17,6 +27,15 @@ class Heuft1Serializer(serializers.ModelSerializer):
 class Heuft2Serializer(serializers.ModelSerializer):
     """Heuft 2 Serializer"""
     product = ProductField(queryset=Product.objects.all())
+    week = serializers.SerializerMethodField()
+
+    def get_week(self, instance):
+        """get week iso from date"""
+        try:
+            date = instance.date
+        except Exception as e:
+            date = instance['date']
+        return date.isocalendar()[1]
 
     class Meta:
         model = Heuft2
