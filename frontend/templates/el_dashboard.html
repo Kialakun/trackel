@@ -125,7 +125,7 @@
       });
     },
     data: {
-      requestPromise: 0,
+      ldDatasets: [],
       heuftChartsKey: 0,
       elActive: true,
       ldActive: false,
@@ -156,12 +156,42 @@
         product: 0,
       },
       lossSummary: {
+        data: {
+          heuft1: [],
+          heuft2: []
+        },
         otherLoss: 0,
         heuft1Loss: 0,
         heuft2Loss: 0,
-      }
+      },
     },
     methods: {
+      asyncGenerateLossSummary: async function (params) {
+        const vue = this;
+        var data = vue.generateLdChart('ld-chart-can', params)
+        .then((response) => {
+          var res = vue.generateLdChart('ld-chart-bottle', params);
+          setTimeout( function () {
+            vue.calculateLossSummary(vue.lossSummary.data.heuft1, vue.lossSummary.data.heuft2);
+          }, 1000)
+          return [response, res];
+        });
+      },
+      calculateLossSummary: function (heuft1data, heuft2data) {
+        // calculate other losses
+        const reducer = (accumulator, currentValue) => accumulator + currentValue;
+
+        this.lossSummary.heuft1Loss = heuft1data.reduce(reducer);
+        this.lossSummary.heuft2Loss = heuft2data.reduce(reducer);
+
+        var otherLoss = calculateOtherLosses(
+          this.ldExtractLoss,
+          this.lossSummary.heuft1Loss,
+          this.lossSummary.heuft2Loss
+        )
+
+        this.lossSummary.otherLoss = otherLoss;
+      },
       clearLossSummary: function () {
         for (var item in this.lossSummary) {
           this.lossSummary[item] = 0;
@@ -183,7 +213,6 @@
         this.ldChartBottle.destroy();
         //params = date for db filtering
         var params = '&date=' + this.ldDate;
-        console.log(this.ldDate);
         //ergenerate the charts
         this.generateLdChart('ld-chart-can', params);
         this.generateLdChart('ld-chart-bottle', params);
@@ -302,8 +331,9 @@
            //destroy elChart
            chart.destroy();
            this.$nextTick(function () {
-             this.generateLdChart('ld-chart-can', params);
-             this.generateLdChart('ld-chart-bottle', params);
+             this.asyncGenerateLossSummary(params);
+             //this.generateLdChart('ld-chart-can', params);
+             //this.generateLdChart('ld-chart-bottle', params);
            });
         }
       },
@@ -340,7 +370,7 @@
         }
         return results;
       },
-      generateLdChart: function (id, params) {
+      generateLdChart: async function (id, params) {
 
         //set obj to access again from jquery
         var obj = this;
@@ -373,8 +403,9 @@
           data: []
         }];
 
+
         // heutf 1 ajax call
-        this.requestPromise = $.get(urls['Heuft 1 Rejects'], function (response) {
+        $.get(urls['Heuft 1 Rejects'], function (response) {
           const res = response.results;
 
           // store data
@@ -428,20 +459,13 @@
                 datasets[1].data.push(0);
               }
             }
-            // summary of loss
-            // calculate other losses
-            const reducer = (accumulator, currentValue) => accumulator + currentValue;
+            for (var item in datasets[0].data) {
+              obj.lossSummary.data.heuft1.push(datasets[0].data[item]);
+            }
+            for (var item in datasets[1].data) {
+              obj.lossSummary.data.heuft2.push(datasets[1].data[item]);
+            }
 
-            obj.lossSummary.heuft1Loss = datasets[0].data.reduce(reducer);
-            obj.lossSummary.heuft2Loss = datasets[1].data.reduce(reducer);
-
-            var otherLoss = calculateOtherLosses(
-              obj.ldExtractLoss,
-              obj.lossSummary.heuft1Loss,
-              obj.lossSummary.heuft2Loss
-            )
-
-            obj.lossSummary.otherLoss = otherLoss;
             loadChart(id, type, labels, datasets);
           });
 
@@ -490,7 +514,7 @@
               obj.ldChartBottle = chart;
             }
         };
-
+      return datasets;
       },
       generateChart: function (id) {
         var obj = this;
