@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'trackel.shifts',
     'trackel.supervisors',
     'trackel.rejects',
+    'trackel.targets',
 ]
 
 MIDDLEWARE = [

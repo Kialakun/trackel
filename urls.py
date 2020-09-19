@@ -23,6 +23,7 @@ from trackel.products.views import ProductViewSet, ProductExportViewSet
 from trackel.shifts.views import ShiftViewSet, ShiftExportViewSet
 from trackel.rejects.views import Heuft1ViewSet, Heuft2ViewSet
 from trackel.supervisors.views import SupervisorViewSet, SupervisorExportViewSet
+from trackel.targets.views import TargetViewSet
 
 router = DefaultRouter()
 
@@ -36,6 +37,7 @@ router.register(r'Supervisors', SupervisorViewSet)
 router.register(r'SupervisorsExport', SupervisorExportViewSet, basename='supervisorsexport')
 router.register(r'Heuft1', Heuft1ViewSet, basename='heuft1')
 router.register(r'Heuft2', Heuft2ViewSet, basename='heuft2')
+router.register(r'Targets', TargetViewSet, basename='target')
 
 urlpatterns = [
     path('API/', include(router.urls)),
