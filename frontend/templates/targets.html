@@ -12,9 +12,16 @@
 
 {% block vue %}
 <template id="list-group-buttons">
-  <div class="list-group">
-    <button class="list-group-item" type="button" name="button">Update</button>
-  </div>
+  <ol class="list-group">
+    <li class="list-group-item">
+      <span></span>
+      <button class="btn btn-sm btn-primary" type="button" name="button">Update</button>
+    </li>
+  </ol>
+</template>
+
+<template id="targetAddModal">
+  <transition></transition>
 </template>
 
 <script type="text/javascript">

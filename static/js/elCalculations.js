@@ -17,7 +17,6 @@ function conditionalColoring (chart, target, time=false) {
         if (datasets[k].data[i].y > target) {
           // change color of background and border to red
           datasets[k].backgroundColor[i] = red;
-          datasets[k].borderColor[i] = redBorder;
         }
       }
     }
@@ -27,7 +26,6 @@ function conditionalColoring (chart, target, time=false) {
         if (datasets[k].data[i] > target) {
           // change color of background and border to red
           datasets[k].backgroundColor[i] = red;
-          datasets[k].borderColor[i] = redBorder;
         }
       }
     }
