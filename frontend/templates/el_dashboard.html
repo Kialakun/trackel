@@ -119,6 +119,7 @@
     delimiters: ["[[", "]]"],
     components: {},
     mounted: function(){
+      this.getTargets();
       this.$root.$on('ajaxcomplete', (evt) => {
         const vue = this;
         setTimeout(function () {
@@ -170,8 +171,24 @@
         heuft1Loss: 0,
         heuft2Loss: 0,
       },
+      targets: {
+        heuft: 0,
+        extractLoss: 0,
+      },
     },
     methods: {
+      getTargets: function () {
+        const vue = this;
+
+        $.get('API/Targets/', function (response) {
+          var res = response.results[0];
+          if (res) {
+            vue.targets.heuft = res.heuft;
+            vue.targets.extractLoss = res.extract_loss;
+          }
+        });
+
+      },
       asyncGenerateLossSummary: function (params) {
         const vue = this;
         var data = vue.generateLdChart('ld-chart-can', params)
@@ -453,7 +470,7 @@
               // loop through results for heuft 1
               var nomatch1 = true;
               // push targets
-              datasets[2].data.push(3);
+              datasets[2].data.push(obj.targets.heuft);
               // push color
               datasets[0].backgroundColor.push(blue);
               datasets[0].borderColor.push(blueBorder);
@@ -502,7 +519,7 @@
             } else if (type === 'BOTTLE') {
               var chartObj = obj.ldChartBottle;
             }
-            conditionalColoring(chartObj, 12);
+            conditionalColoring(chartObj, obj.targets.heuft);
           });
 
         });
@@ -557,15 +574,30 @@
         // ajax call
         $.get(obj.elChartUrl, function (response) {
           var d = obj.formatData(response.results);
+
           var data = {
             datasets: [{
               label: 'Extract Loss %',
-              backgroundColor: 'rgb(10, 200, 10, 0.5)',
-              borderColor: 'rgb(10, 200, 10)',
+              backgroundColor: [],
+              borderColor: [],
               borderWidth: 0.5,
               data: d
+            },{
+              type: 'line',
+              label: 'Target %',
+              backgroundColor: 'rgb(0, 0, 0, 0)',
+              borderColor: 'rgb(200, 200, 10)',
+              borderWidth: 1,
+              data: []
             }]
           }
+
+          for (var i in d) {
+            data.datasets[1].data.push(obj.targets.heuft);
+            data.datasets[0].backgroundColor.push('rgb(10, 200, 10, 0.5)');
+            data.datasets[0].borderColor.push('rgb(10, 200, 10)');
+          }
+
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
@@ -603,6 +635,7 @@
               }
           }); //end chart
           obj.elChart = chart;
+          conditionalColoring(obj.elChart, obj.targets.extractLoss, time=true);
         }); //end ajax
       }// end vue function
     },

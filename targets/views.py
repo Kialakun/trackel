@@ -15,10 +15,5 @@ class TargetViewSet(viewsets.ModelViewSet):
         today = datetime.date.today()
         thisyear = today.year
 
-        queryset = Target.objects.filter(timestamp__year=thisyear)
-
-        all = int(self.request.query_params.get('all', False))
-        if not all:
-            queryset = queryset.order_by('-timestamp')[:1]
-
+        queryset = Target.objects.filter(timestamp__year=thisyear).order_by('-timestamp')
         return queryset

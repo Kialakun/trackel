@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+  <div class="container">
+    <h6>Targets Settings</h6>
+    <p>Click below buttons to edit corresponding target.</p>
+    <targets-list-group-buttons></targets-list-group-buttons>
+  </div>
+</div>
+{% endblock content %}
+
+{% block vue %}
+<template id="list-group-buttons">
+  <div class="list-group">
+    <button class="list-group-item" type="button" name="button">Update</button>
+  </div>
+</template>
+
+<script type="text/javascript">
+  Vue.component('targets-list-group-buttons', {
+    delimiters: ["[[", "]]"],
+    data: function () {
+      return {
+      }
+    },
+    template: '#list-group-buttons'
+  });
+
+  const app = new Vue({
+    delimiters: ["[[", "]]"],
+    el: '#app',
+    data: {
+      targets: 0,
+      buttons: {
+        heuftClicked: false,
+        elClicked: false
+      },
+    },
+    methods: {
+      getTargets: function () {
+        const vue = this;
+
+        $.get('/API/Targets', function (response) {
+          vue.targets = response.results;
+        });
+      }
+    }
+  });
+</script>
+
+{% endblock vue %}
