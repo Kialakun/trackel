@@ -20,7 +20,9 @@ class Heuft2ViewSet(viewsets.ModelViewSet):
     """Heuft 1 Model View Set"""
     def get_queryset(self, *args, **kwargs):
         """overriding queryset to include custom query params"""
-        queryset = Heuft2.objects.all()
+        today = datetime.date.today()
+        thisyear = today.year
+        queryset = Heuft2.objects.filter(date__year=thisyear)
         # check query params
         # group by
         groupby = self.request.query_params.get('groupby', False)
@@ -85,7 +87,9 @@ class Heuft1ViewSet(viewsets.ModelViewSet):
     """Heuft 1 Model View Set"""
     def get_queryset(self, *args, **kwargs):
         """overriding queryset to include custom query params"""
-        queryset = Heuft1.objects.all()
+        today = datetime.date.today()
+        thisyear = today.year
+        queryset = Heuft1.objects.filter(date__year=thisyear)
         # check query params
         # group by
         groupby = self.request.query_params.get('groupby', False)

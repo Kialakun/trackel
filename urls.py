@@ -27,13 +27,13 @@ from trackel.targets.views import TargetViewSet
 
 router = DefaultRouter()
 
-router.register(r'ExtractLoss', ExtractLossDataViewSet)
+router.register(r'ExtractLoss', ExtractLossDataViewSet, basename='extractlossdata')
 router.register(r'ExtractLossExport', ExtractLossDataExportViewSet, basename='extractlossexport')
-router.register(r'Products', ProductViewSet)
+router.register(r'Products', ProductViewSet, basename='product')
 router.register(r'ProductsExport', ProductExportViewSet, basename='productsexport')
-router.register(r'Shifts', ShiftViewSet)
+router.register(r'Shifts', ShiftViewSet, basename='shift')
 router.register(r'ShiftsExport', ShiftExportViewSet, basename='shiftsexport')
-router.register(r'Supervisors', SupervisorViewSet)
+router.register(r'Supervisors', SupervisorViewSet, basename='supervisor')
 router.register(r'SupervisorsExport', SupervisorExportViewSet, basename='supervisorsexport')
 router.register(r'Heuft1', Heuft1ViewSet, basename='heuft1')
 router.register(r'Heuft2', Heuft2ViewSet, basename='heuft2')

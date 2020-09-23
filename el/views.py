@@ -14,19 +14,44 @@ from trackel.products.models import Product
 # Create your views here.
 class ElByProductMonthSummary(generics.ListAPIView):
     serializer_class = ElByProductMonthSummary
-    queryset = ExtractLossData.objects.annotate(m=ExtractMonth('date')).values('m').annotate(count=Count('m')).order_by('-m')
     permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        """override get queryset"""
+        # filter queryset to show only current years data
+        today = datetime.date.today()
+        thisyear = today.year
+
+        queryset = ExtractLossData.objects.filter(date__year=thisyear)
+        queryset = queryset.annotate(m=ExtractMonth('date')).values('m').annotate(count=Count('m')).order_by('-m')
+        return queryset
 
 class ElByProductWeekSummary(generics.ListAPIView):
     serializer_class = ElByProductWeekSummary
-    queryset = ExtractLossData.objects.annotate(w=ExtractWeek('date')).values('w').annotate(count=Count('w')).order_by('-w')
     permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        """override get queryset"""
+        # filter queryset to show only current years data
+        today = datetime.date.today()
+        thisyear = today.year
+        queryset = ExtractLossData.objects.filter(date__year=thisyear)
+        queryset = queryset.annotate(w=ExtractWeek('date')).values('w').annotate(count=Count('w')).order_by('-w')
+        return queryset
 
 class ExtractLossDataViewSet(viewsets.ModelViewSet):
     """View set for Extract Loss Data"""
     serializer_class = ExtractLossDataSerializer
-    queryset = ExtractLossData.objects.all().order_by('-date')
     permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        """override get queryset"""
+        # filter queryset to show only current years data
+        today = datetime.date.today()
+        thisyear = today.year
+        queryset = ExtractLossData.objects.filter(date__year=thisyear)
+        queryset = queryset.order_by('-date')
+        return queryset
 
 class ExtractLossDataExportViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
     """View set for Extract Loss Data"""
