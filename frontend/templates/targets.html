@@ -1,34 +1,122 @@
 {% extends "base.html" %}
-
+{% load rest_framework %}
 {% block content %}
 <div id="app">
   <div class="container">
     <h6>Targets Settings</h6>
     <p>Click below buttons to edit corresponding target.</p>
-    <targets-list-group-buttons></targets-list-group-buttons>
+    <div class="d-flex">
+      <targets-list-group-buttons></targets-list-group-buttons>
+    </div>
   </div>
 </div>
 {% endblock content %}
 
 {% block vue %}
 <template id="list-group-buttons">
-  <ol class="list-group">
-    <li class="list-group-item">
-      <span></span>
-      <button class="btn btn-sm btn-primary" type="button" name="button">Update</button>
-    </li>
-  </ol>
+  <div id="wrapper">
+    <ol class="list-group">
+      <li class="list-group-item">
+        <span class="font-weight-bold">Heuft Target:</span>
+        <span class="ml-3">[[ targets.heuft ]]</span>
+      </li>
+      <li class="list-group-item">
+        <span class="font-weight-bold">Extract Loss Target:</span>
+        <span class="ml-3">[[ targets.extract_loss ]]</span>
+      </li>
+    </ol>
+    <button @click="showModal = true" class="btn btn-sm btn-primary mt-3" type="button" name="button">Update</button>
+    <target-add-modal v-if="showModal" @close="showModal = false">
+      <div slot="header">
+        <h6>Update Target</h6>
+      </div>
+    </target-add-modal>
+  </div>
 </template>
 
 <template id="targetAddModal">
-  <transition></transition>
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header bg-success text-white">
+            <slot name="header">
+              default header
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+              <form id="targetform" class="form" method="put">
+                {% csrf_token %}
+                {% render_form form %}
+              </form>
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+              <button class="btn btn-secondary modal-default-button" @click="$emit('close')">
+                Cancel
+              </button>
+              <button class="btn btn-primary modal-default-button" @click="sendForm">
+                Save
+              </button>
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script type="text/javascript">
-  Vue.component('targets-list-group-buttons', {
+  Vue.component('target-add-modal', {
     delimiters: ["[[", "]]"],
     data: function () {
       return {
+      }
+    },
+    methods: {
+      sendForm: function () {
+        var form = $('#targetform').serializeArray();
+        form = form.reduce((accum, current) => {
+          accum[current.name] = current.value;
+          return accum;
+        }, {});
+        console.log(form);
+        return $.ajax({
+          url: '/API/Targets/1/',
+          headers: {'X-CSRFToken': form.csrfmiddlewaretoken},
+          type: 'PUT',
+          data: form,
+          success: (response) => {
+            console.log("targets updated...");
+          }
+        });
+      }
+    },
+    template: '#targetAddModal'
+  });
+  Vue.component('targets-list-group-buttons', {  
+    delimiters: ["[[", "]]"],
+    created: function () {
+      this.getTargets();
+    },
+    data: function () {
+      return {
+        showModal: false,
+        targets: 0,
+      }
+    },
+    methods: {
+      getTargets: function () {
+        const vue = this;
+        return $.get('/API/Targets/1/', function (response) {
+          vue.targets = response;
+          console.log(response);
+        });
       }
     },
     template: '#list-group-buttons'
@@ -37,22 +125,8 @@
   const app = new Vue({
     delimiters: ["[[", "]]"],
     el: '#app',
-    data: {
-      targets: 0,
-      buttons: {
-        heuftClicked: false,
-        elClicked: false
-      },
-    },
-    methods: {
-      getTargets: function () {
-        const vue = this;
-
-        $.get('/API/Targets', function (response) {
-          vue.targets = response.results;
-        });
-      }
-    }
+    data: {},
+    methods: {}
   });
 </script>
 

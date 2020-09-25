@@ -3,7 +3,7 @@ from .models import Target
 
 class TargetSerializer(serializers.ModelSerializer):
     """docstring for ExtractLossDataSerializer."""
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Target
