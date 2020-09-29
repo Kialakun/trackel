@@ -1,12 +1,14 @@
 {% extends "base.html" %}
+
 {% load rest_framework %}
+
 {% block content %}
 <div id="app">
   <div class="container">
     <h6>Targets Settings</h6>
     <p>Click below buttons to edit corresponding target.</p>
     <div class="d-flex">
-      <targets-list-group-buttons></targets-list-group-buttons>
+      <targets-list-group-buttons :key="listGroupKey"></targets-list-group-buttons>
     </div>
   </div>
 </div>
@@ -80,12 +82,16 @@
     },
     methods: {
       sendForm: function () {
+        const vue = this;
         var form = $('#targetform').serializeArray();
+
         form = form.reduce((accum, current) => {
           accum[current.name] = current.value;
           return accum;
         }, {});
+
         console.log(form);
+
         return $.ajax({
           url: '/API/Targets/1/',
           headers: {'X-CSRFToken': form.csrfmiddlewaretoken},
@@ -93,13 +99,15 @@
           data: form,
           success: (response) => {
             console.log("targets updated...");
+            vue.$emit('close');
+            app.listGroupKey++;
           }
         });
       }
     },
     template: '#targetAddModal'
   });
-  Vue.component('targets-list-group-buttons', {  
+  Vue.component('targets-list-group-buttons', {
     delimiters: ["[[", "]]"],
     created: function () {
       this.getTargets();
@@ -122,10 +130,12 @@
     template: '#list-group-buttons'
   });
 
-  const app = new Vue({
+  var app = new Vue({
     delimiters: ["[[", "]]"],
     el: '#app',
-    data: {},
+    data: {
+      listGroupKey: 0,
+    },
     methods: {}
   });
 </script>

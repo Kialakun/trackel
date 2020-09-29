@@ -54,7 +54,7 @@
 </template>
 
 {% comment %}
-        Displaying Forms in a Modal
+  Displaying Forms in a Modal
 {% endcomment %}
 <template id="modalForm">
   <div class="modal fade" id="addModal">
@@ -98,6 +98,7 @@
         for (var name in form) {
           data[form[name]['name']] = form[name]['value'];
         }
+
         $.post(url, data, function (data, status) {
           app.$refs.tableRef.getData();
           $('#addModal').modal('hide');
@@ -136,7 +137,9 @@
     methods: {
       refreshTable : function () {
         app.$refs.tableRef.tableKey++;
-        app.$refs.tableRef.getData();
+        this.$nextTick(function () {
+          app.$refs.tableRef.getData();
+        });
       },
     },
     template: '#trackel-dt-btngrp'
@@ -147,7 +150,9 @@
     mounted: function () {
       this.tableKey++;
       this.getAjaxUrl();
-      this.getData();
+      this.$nextTick(function () {
+        this.getData();
+      });
     },
     data: function () {
       return {
@@ -174,8 +179,9 @@
           object.rows = response.results;
           object.headers = object.getHeaders(object);
 
-          if (!(object.table === 0)) {
+          if (object.table !== 0) {
             object.table.destroy();
+            console.log(object.table);
           }
 
           object.$nextTick(function () {
