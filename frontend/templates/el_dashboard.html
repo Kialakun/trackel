@@ -585,8 +585,8 @@
             },{
               type: 'line',
               label: 'Target %',
-              backgroundColor: [],
-              borderColor: [],
+              backgroundColor: 'rgb(200, 200, 10, 0)',
+              borderColor: 'rgb(200, 200, 10)',
               borderWidth: 3,
               data: []
             }]
@@ -594,13 +594,11 @@
 
           for (var i in d) {
             data.datasets[1].data.push({t: d[i].t, y: parseFloat(obj.targets.extractLoss)});
-            data.datasets[1].backgroundColor.push('rgb(200, 200, 10, 0)');
-            data.datasets[1].borderColor.push('rgb(200, 200, 10)');
             data.datasets[0].backgroundColor.push('rgb(10, 200, 10, 0.5)');
             data.datasets[0].borderColor.push('rgb(10, 200, 10)');
           }
 
-          console.log(d);
+          console.log(data.datasets[1].borderColor);
           var ctx = document.getElementById(id).getContext('2d');
           var chart = new Chart(ctx, {
               // The type of chart we want to create
