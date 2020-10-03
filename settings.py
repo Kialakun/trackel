@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
-
+from google.com import secretsmanager
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +23,8 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k=q$*@9e7n_g8d74wks)$iu3p-!+w#k_#=ib0#f0y6z24kax88'
+client = secretsmanager.SecretManagerCliesnt()
+SECRET_KEY = client.access_secret_version(request={})
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=1))
