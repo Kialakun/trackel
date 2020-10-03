@@ -12,22 +12,18 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
-from google.com import secretsmanager
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-client = secretsmanager.SecretManagerCliesnt()
-SECRET_KEY = client.access_secret_version(request={})
+SECRET_KEY = 'sidjnfun3#$)#$U@*jkndsj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", default=1))
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", '127.0.0.1').split(" ")
 
@@ -99,13 +95,11 @@ WSGI_APPLICATION = 'trackel.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-        "USER": os.environ.get("SQL_USER", "admin"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "adminpassword"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "ENGINE": os.environ.get("SQL_ENGINE"),
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST", ""),
         "PORT": os.environ.get("SQL_PORT", "5432")
     }
 }
@@ -212,3 +206,8 @@ PWA_APP_LANG = 'en-US'
 
 # crispy forms setup
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Ensure session over HTTPS only
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Set session Timeout
+SESSION_COOKIE_AGE = 3600 # one hour in seconds
