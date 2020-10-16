@@ -13,5 +13,4 @@ urlpatterns = [
     path('Heuft1/', views.heuft1_view, name='Heuft1'),
     path('Heuft2/', views.heuft2_view, name='Heuft2'),
     path('Targets/', views.targets_view, name='Targets'),
-    path('startup/', views.create_session, name='createsession')
 ]
