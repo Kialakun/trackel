@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from trackel.el.serializers import ExtractLossDataSerializer
@@ -10,23 +9,6 @@ from trackel.supervisors.serializers import SupervisorSerializer
 from trackel.rejects.serializers import Heuft1Serializer, Heuft2Serializer
 from trackel.targets.serializers import TargetSerializer
 # Create your views here.
-def create_session(request):
-    """create app session and show front page"""
-    # Get token from auth
-    token = request.headers.get('Authorization')
-    # Create response object
-    response = redirect('/accounts/login')
-    # Set cookie based on token
-    response.set_cookie(
-        'ttid',
-        value=token,
-        max_age=1800, # 30 minutes
-        secure=True,
-        httponly=True,
-        samesite='Lax'
-    )
-    return response
-
 
 @login_required
 def heuft2_view(request):
