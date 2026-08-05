@@ -7,10 +7,10 @@ A Django-based web dashboard for monitoring and analysing production line losses
 ## Features
 
 - **Interactive Dashboard** – built with Vue.js and Chart.js for real‑time data visualisation.
-- **Loss Metrics** – displays Extract Loss, Heuft 1 Loss, Heuft 2 Loss, and calculated Other Losses.
+- **Loss Metrics** – displays Product Loss, Rejector Loss, and calculated Other Losses.
 - **Time‑based Aggregation** – switch between weekly and monthly views.
-- **Drill‑down Capability** – click on a bar in the Extract Loss chart to view loss deployment details for that period.
-- **Product‑line Breakdown** – separate loss charts for Can and Bottle lines.
+- **Drill‑down Capability** – click on a bar in the Product Loss chart to view loss deployment details for that period.
+- **Product‑line Breakdown** – separate loss charts for product lines.
 - **Target Tracking** – shows target values as horizontal lines for comparison.
 - **Responsive Design** – uses Bootstrap 4 for a mobile‑friendly layout.
 
