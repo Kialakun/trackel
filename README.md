@@ -1,6 +1,6 @@
 # Loss Tracking Application
 
-A Django-based web dashboard for monitoring and analysing production line losses in a manufacturing environment. The application visualises key metrics such as **Extract Loss**, **Heuft 1** and **Heuft 2** reject losses, and **Other Losses** across different product lines (Can and Bottle). It supports interactive time‑based filtering (weeks/months) and drill‑down to detailed loss breakdowns per product.
+A Django-based web dashboard for monitoring and analysing production line losses in a manufacturing environment. The application visualises key metrics such as **Product Loss**, **Rejectors** reject losses, and **Other Losses** across different production lines. It supports interactive time‑based filtering (weeks/months) and drill‑down to detailed loss breakdowns per product.
 
 ---
 
